@@ -1,0 +1,27 @@
+{
+  "name": "MDGMap",
+  "version": "0.1.0",
+  "description": "450 Final Project",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1"
+  },
+  "repository": "",
+  "keywords": [
+    "node.js",
+    "eclipse",
+    "nodeclipse"
+  ],
+  "private": true,
+  "dependencies": {
+    "body-parser": "*",
+    "ejs": "*",
+    "ejs-locals": "*",
+    "express": "4.x",
+    "express-session": "*",
+    "lru-cache": "2.5.x"
+  },
+  "author": "",
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}

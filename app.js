@@ -18,7 +18,7 @@ routeFile.init(function() {
 	app.get('/', routeFile.enterList);
 	app.get('/home', routeFile.enterList);
 	app.post('/processList', routeFile.processList);
-    app.post('/results', routeFile.returnResults);
+    //app.post('/results', routeFile.returnResults);
 	
 	http.createServer(app).listen(app.get('port'), function() {
 			 console.log( 'Open browser to http://localhost:' + app.get( 'port' ));

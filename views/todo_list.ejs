@@ -6,8 +6,9 @@
 	var todoList = '';
 
 	$('#submitBtn').click(function() {
-	 	$.post('/processList', {list: todoList}, function(businessesJsonStruct) {
-	    
+	 	$.post('/processList', {list: todoList}, function(responseObj) {
+	    	var recommendedBusinesses = responseObj.businesses;
+	    	var unsatisfiedToDos = responseObj.unsatisfiedItems;
 	    });
 	});
 </script>

@@ -1,0 +1,35 @@
+#main-wrapper {
+    width: 40%;
+    min-height: 400px;
+    background-color: #E6E6E6;
+    margin: 100px auto 100px auto;
+    padding: 10px 15px 10px 15px;
+    font-family: 'Open Sans', sans-serif;
+    border-radius: 4px;
+}
+h1 {
+    font-size: 40px;
+    font-weight: lighter;
+    color: #990000;
+}
+button {
+    text-decoration: none;
+    color: white;
+    background-color: #2EB8B8;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 5px 10px 5px 10px;
+    border-radius: 4px;
+    border: none;
+}
+.task {
+    width: 60%;
+    height: 40px;
+    margin: 10px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+}
+#addTask:hover, button:hover{
+    cursor: pointer;
+    opacity: .7;
+}

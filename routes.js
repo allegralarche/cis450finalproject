@@ -12,4 +12,13 @@ exports.processList = function(req, res) {
 	var todolist = req.body.list;
 	
 	
+
+    
 };
+
+exports.returnResults = function(req, res) {
+
+    // after whole list is processed, and algorithm is computed, return results page
+    res.render('results');
+}
+

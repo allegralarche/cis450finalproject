@@ -1,13 +1,36 @@
-
+<html>
+<body>
+<h1>What do you have to get done?</h1>
+<form id='taskForm'>
+    <input type="text" class="task">
+    <input type="text" class="task">
+    <input type="text" class="task">
+</form>
+<p id="addTask">+Add another task</p>
 <button id='submitBtn'>Submit List</button>
 
+</body>
+</html>
 
 <script>
-	var todoList = '';
+    var todoList = [];
 
 	$('#submitBtn').click(function() {
+        // get all the data in the task inputs and make a list out of them
+        $('.task').each(function() {
+            var task = $(this).val();
+            if(task !== "") {
+                todoList[todoList.length] = task;
+            }
+        })
+        // pass this list into the post request
 	 	$.post('/processList', {list: todoList}, function(businessesJsonStruct) {
 	    
 	    });
 	});
+
+
+    $('#addTask').click(function() {
+        $('#taskForm').append("<input type='text' class='task'>");
+    });
 </script>

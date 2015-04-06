@@ -1,9 +1,13 @@
 
 <button id='submitBtn'>Submit List</button>
 
- $('#submitBtn').click(function() {
- 	$.post('/processList', {todo-list: list}, function(businessesJsonStruct) {
-    
-    });
-});
- 
+
+<script>
+	var todoList = '';
+
+	$('#submitBtn').click(function() {
+	 	$.post('/processList', {list: todoList}, function(businessesJsonStruct) {
+	    
+	    });
+	});
+</script>

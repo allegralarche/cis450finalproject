@@ -9,5 +9,7 @@ exports.enterList = function(req, res) {
 
 //This route should be called (as a POST request) when the todo list is submitted
 exports.processList = function(req, res) {
+	var todolist = req.body.list;
 	
-}
+	
+};

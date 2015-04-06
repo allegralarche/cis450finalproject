@@ -14,6 +14,8 @@
 
 <script>
     var todoList = [];
+    //The address the user enters
+    var startingAddress;
 
 	$('#submitBtn').click(function() {
         // get all the data in the task inputs and make a list out of them
@@ -24,7 +26,7 @@
             }
         })
         // pass this list into the post request
-	 	$.post('/processList', {list: todoList}, function(responseObj) {
+	 	$.post('/processList', {list:todoList, startingAddress:startingAddress}, function(responseObj) {
 	    	var recommendedBusinesses = responseObj.businesses;
 	    	var unsatisfiedToDos = responseObj.unsatisfiedItems;
 	    });

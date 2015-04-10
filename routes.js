@@ -1,6 +1,6 @@
 // Connect string to Oracle
 var connectData = { 
-  "hostname": "jdbc:oracle:thin:@//cis450projectdb.cc2zrrk5p1po.us-east-1.rds.amazonaws.com", 
+  "hostname": "cis450projectdb.cc2zrrk5p1po.us-east-1.rds.amazonaws.com", 
   "user": "admin", 
   "password": "cis450project", 
   "database": "CIS450DB",

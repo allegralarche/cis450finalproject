@@ -1,14 +1,23 @@
-// Connect string to Oracle
-var connectData = { 
-  "hostname": "jdbc:oracle:thin:@//cis450projectdb.cc2zrrk5p1po.us-east-1.rds.amazonaws.com", 
-  "user": "admin", 
-  "password": "cis450project", 
-  "database": "CIS450DB",
-  "port": "1521" };
-//var oracle =  require("oracle");
-
 
 exports.init = function(callback) {
+	console.log('routes.init called');
+	var oracledb =  require("oracledb");
+	console.log('after require');
+
+	var connectData = { 
+		  user: "admin", 
+		  password: "cis450project", 
+		  connectString: "jdbc:oracle:thin:@//cis450projectdb.cc2zrrk5p1po.us-east-1.rds.amazonaws.com:1521/CIS450DB"
+	};
+
+	oracledb.getConnection(connectData, function(err, connection) {
+	    if (err) {
+	    	console.log(err.message);
+	    } else {
+	    	console.log("CONNECTED");
+	    }
+	});
+	
 	callback();
 };
 
@@ -49,21 +58,96 @@ var getBusinessesForList = function(todoList, startAddress, callback) {
 
 //ALIZA AND JARED'S CODE
 var getBestBusinessesAlgorithm = function(itemsToBusinesses, startAddress, callback) {
-	bestBusinesses = [];
-	unsatisfiedToDos = [];
+
+	var obj = JSON.parse(item_dict);
+	lestBuinessesMetric(obj, function(suggestedBusinessesMap, unsatisfiedToDos) {
+		
+		
+	});
+		
 	
-	
-	
-	var obj = JSON.parse(itemsToBusinesses);
-	
-	for (var item in obj) {
-		console.log(item);
-		var business_list = obj[item];
+};
+
+var leastBusinessesMetric = function(obj, callback) {
+	//Reverse dict from businesses to to-do item
+	var businessesToItems = {};
+	//Dict from business to number of to-do items covered
+	var businessesToCount = {};
+	//List of all todo items
+	var allItems = [];
+	//Any todo items that are satisfied by no businesses
+	var unsatisfiedToDos;
+
+	for (var toDoItem in obj) {
+		allItems.push(toDoItem)
+		var business_list = obj[toDoItem];
+		if (business_list.length == 0) {
+			unsatisfiedToDos.push(toDoItem);
+		}
 		for (var  i = 0; i < business_list.length; i++) {
-			console.log(business_list[i].name);
+			var businessId = business_list[i].bid;
+			itemList = businessesToItems[businessId];
+			itemCount = businessesToCount[businessId];
+			if (itemList == null) {
+				itemList = [];
+				itemCount = 1;
+			}
+			itemList.push(toDoItem);
+			itemCount += 1;
+			businessesToItems[businessId] = itemList;
+			businessesToCount[businessId] = itemCount;
 		}
 	}
+
+	// Create items array
+	var sortedByCount = Object.keys(businessesToCount).map(function(key) {
+	    return [key, businessesToCount[key]];
+	});
+
+	// Sort the array based on the second element
+	sortedByCount.sort(function(first, second) {
+	    return second[1] - first[1];
+	});
+
+	//Dict from suggested business to the items it satisfies
+	var suggestedBusinesses = {};
+
+	for (var i = 0; i < sortedByCount.length; i++) {
+		var obj = sortedByCount[i];
+		businessId = obj[0];
+		//console.log('looking at business: ' + businessId);
+		satisfiedItems = businessesToItems[businessId];
+		//console.log('   items it satisfies: ' + satisfiedItems);
+		//Remove all of the items that this business covers from the remaining list of todo items
+		var beingUsed = false;
+		for (var j = 0; j < satisfiedItems.length; j++) {
+			var item = satisfiedItems[j];
+			var index = allItems.indexOf(item);
+			if (index > -1) {
+				beingUsed = true;
+				allItems.splice(index, 1);
+			}
+		}
+		/* Once we are including a business in the suggested list for reasons of even 1 of the items it satisfies, the list of satisfiedItems 
+		will include ALL items that this business can possibly satisfy, even if another business has already been selected to satisfy the
+		item -- The decision for which single business to suggest for an item if multiple in the solution satisfy it will be made based 
+		on superior ranking */
+		if (beingUsed) {
+			suggestedBusinesses[businessId] = satisfiedItems;
+		}
+
+		//console.log('   current state of allItems: ' + allItems);
+		//If all of the todo items have been taken care of, break
+		if (allItems.length == 0) {
+			break;
+		}
+	}
+
+	/*for (business in suggestedBusinesses) {
+		console.log(business);
+		console.log(suggestedBusinesses[business]);
+	}*/
 	
-	callback(bestBusinesses, unsatisfiedToDos);
-};
+	callback(suggestedBusinesses, unsatisfiedToDos);
+}
 

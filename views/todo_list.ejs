@@ -1,6 +1,5 @@
 <head>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
-    <link rel='stylesheet' type='text/css' href='style.css'>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 </head>
 <html>
@@ -22,6 +21,8 @@
     var todoList = [];
     //The address the user enters
     var startingAddress;
+    //Boolean indicating whether to use minimal businesses metric or shortest distance metric
+    var useMinimalMetric;
 
 	$('#submitBtn').click(function() {
         // get all the data in the task inputs and make a list out of them
@@ -32,10 +33,19 @@
             }
         })
         // pass this list into the post request
-	 	$.post('/processList', {list:todoList, startingAddress:startingAddress}, function(responseObj) {
-	    	var recommendedBusinesses = responseObj.businesses;
-	    	var unsatisfiedToDos = responseObj.unsatisfiedItems;
-	    });
+	 	$.post('/processList', {list:todoList, startingAddress:startingAddress, useMinimalMetric:useMinimalMetric}, 
+	 		function(responseObj) {
+	    	  var idsToItems = responseObj.idsToItems;
+	    	  var idsToBusinesses = responseObj.idsToBusinesses;
+	    	  var unsatisfiedItems = responseObj.unsatisfiedItems;
+	    	  console.log(idsToItems);
+			  console.log(idsToBusinesses);
+			  console.log(unsatisfiedItems);
+	    	  $.post('/displayResults', 
+	    	  	 {idsToItems:JSON.stringify(idsToItems), idsToBusinesses:JSON.stringify(idsToBusinesses), unsatisfiedItems:JSON.stringify(unsatisfiedItems)}, 
+	    	  	 function(status) {
+	    	  });
+        });
 	});
 
 

@@ -1,13 +1,13 @@
 
 exports.init = function(callback) {
-	console.log('routes.init called');
+	/*console.log('routes.init called');
 	var oracledb =  require("oracledb");
 	console.log('after require');
 
 	var connectData = { 
 		  user: "admin", 
 		  password: "cis450project", 
-		  connectString: "jdbc:oracle:thin:@//cis450projectdb.cc2zrrk5p1po.us-east-1.rds.amazonaws.com:1521/CIS450DB"
+		  connectString: "cis450projectdb.cc2zrrk5p1po.us-east-1.rds.amazonaws.com"
 	};
 
 	oracledb.getConnection(connectData, function(err, connection) {
@@ -17,7 +17,7 @@ exports.init = function(callback) {
 	    	console.log("CONNECTED");
 	    }
 	});
-	
+	*/
 	callback();
 };
 
@@ -25,16 +25,33 @@ exports.enterList = function(req, res) {
 	res.render('todo_list');
 };
 
-//This route should be called (as a POST request) when the todo list is submitted
+//This route should be called (as a GET request) when the todo list is submitted
 exports.processList = function(req, res) {
 	var todolist = req.body.list;
+	console.log('SUBMITTED LIST: ' + todolist);
 	var startAddress = req.body.startingAddress;
+	var useMinimalMetric = req.body.useMinimalMetric;
+	
 	getBusinessesForList(todolist, startAddress, function(businessesStruct) {
-		getBestBusinessesAlgorithm(businessesStruct, startAddress, function(bestBusinesses, unsatisfiedItems) {
-			res.send({businesses:bestBusinesses, unsatisfiedItems:unsatisfiedItems});
+		bestBusinessesAlgorithm(businessesStruct, startAddress, true, 
+				function(idsToItems, idsToBusinesses, unsatisfiedItems) {
+			res.send({idsToItems:idsToItems, idsToBusinesses:idsToBusinesses, unsatisfiedItems:unsatisfiedItems});
 		});
 	});
 };
+
+//Called as a POST request to show the user his/her results
+exports.displayResults = function(req, res) {
+	var recommendations = JSON.parse(req.body.idsToItems);
+	var idsToBusinesses = JSON.parse(req.body.idsToBusinesses);
+	var unsatisfiedToDos = JSON.parse(req.body.unsatisfiedItems);
+	console.log(recommendations);
+	console.log(idsToBusinesses);
+	console.log(unsatisfiedToDos);
+	
+	//Put info into format that can be easily displayed in show_results
+	//res.render('show_results', {});
+}
 
 
 //NINA'S CODE -- arguments passed in are the user's todo list items, and the user's starting address
@@ -57,16 +74,125 @@ var getBusinessesForList = function(todoList, startAddress, callback) {
  */
 
 //ALIZA AND JARED'S CODE
-var getBestBusinessesAlgorithm = function(itemsToBusinesses, startAddress, callback) {
+var bestBusinessesAlgorithm = function(itemsToBusinesses, startAddress, useMinimalMetric, callback) {
 
+	//IN FOR TESTING ONLY
+	var item_dict = '{' +
+	'"buy_shirt":' +  
+		'[ {"name":"Target", "bid":"1", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"},' +
+     	  '{"name":"Walmart", "bid": "2", "address": "200 South Columbus", "rating":"2.0", "lat":"0.0", "long":"0.0"} ],' + 
+	'"get haircut":' +
+		'[ {"name":"Walmart", "bid":"2", "address":"4000 Pine Street", "rating":"2.0", "lat":"0.0", "long":"0.0"},' +
+     	  '{"name":"Bob Barber", "bid": "4", "address": "200 South Columbus", "rating":"4.0", "lat":"0.0", "long":"0.0"} ],' +
+    '"deck furniture":' +
+		'[ {"name":"Target", "bid":"1", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"},' +
+		  '{"name":"Walmart", "bid":"2", "address":"4000 Pine Street", "rating":"2.0", "lat":"0.0", "long":"0.0"},' +
+     	  '{"name":"Furniture Depot", "bid": "6", "address": "200 South Columbus", "rating":"4.0", "lat":"0.0", "long":"0.0"} ],' + 
+    '"get milk":' +
+    	'[ {"name":"Pathmark", "bid":"5", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"},' +
+    	  '{"name":"Shoprite", "bid":"7", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"},' +
+     	  '{"name":"Walmart", "bid": "2", "address": "200 South Columbus", "rating":"2.0", "lat":"0.0", "long":"0.0"} ],' + 
+    '"get birthday cake":' +
+    	'[ {"name":"Perfect Pastries", "bid":"8", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"} ], ' +
+    '"get bread":' +
+    	'[ {"name":"Perfect Pastries", "bid":"8", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"},' +
+    	  '{"name":"Walmart", "bid": "2", "address": "200 South Columbus", "rating":"2.0", "lat":"0.0", "long":"0.0"} ]' + 
+    	  '}';
+
+	//SWITCH BACK TO itemsToBusinesses
 	var obj = JSON.parse(item_dict);
-	lestBuinessesMetric(obj, function(suggestedBusinessesMap, unsatisfiedToDos) {
-		
-		
-	});
-		
 	
+	if (useMinimalMetric) {
+		leastBusinessesMetric(obj, function(suggestions, unsatisfiedToDos) {
+			console
+			//finalMapping is of type bid --> [item], idsToBusinesses is of type bid --> business_object
+			breakTies(suggestions, obj, function(finalMapping, idsToBusinesses) {
+				callback(finalMapping, idsToBusinesses, unsatisfiedToDos);
+			});
+		});
+	} else {
+		shortestDistanceMetric(obj, startAddress, function(finalMapping, idsToBusinesses, unsatisfiedToDos) {
+			callback(finalMapping, idsToBusinesses, unsatisfiedToDos);
+		});
+	}	
 };
+
+var breakTies = function(suggestions, originalObj, callback) {
+	itemToBusiness = {};
+	for (var toDoItem in originalObj) { 
+		var allBusinesses = originalObj[toDoItem];
+		var potentialBusinesses = [];
+		/* Loop through all of the businesses that satisfy this item from the original JSON,
+		and if it is in the list of businesses that we are recommending, include it */
+		for (var i = 0 ; i < allBusinesses.length; i++) {
+			var business = allBusinesses[i];
+			var bid = business.bid;
+			if (suggestions.indexOf(bid) > -1) {
+				potentialBusinesses.push(business);
+			}
+		}
+		var highestRated = potentialBusinesses[0];
+		var highestRating = highestRated.rating;
+		//console.log(highestRated);
+		//console.log(highestRating);
+		for (var i = 1; i < potentialBusinesses.length; i++) {
+			business = potentialBusinesses[i];
+			rating = business.rating;
+			//console.log(business.name);
+			//console.log(rating);
+			if (rating > highestRating) {
+				console.log('CHANGING');
+				highestRated = business;
+				highestRating = rating;
+			}
+		}
+		itemToBusiness[toDoItem] = highestRated;
+	}
+	var finalMapping = {}; // FINAL mapping of businesses to items, to display in results
+	idToBusiness = {}; //Additional dict to return so that we can easily get entire business from the id
+
+	for (item in itemToBusiness) {
+		var business = itemToBusiness[item];
+		var bid = business.bid;
+		idToBusiness[bid] = business;
+		//console.log('item: ' + item);
+		//console.log('  sugg business: ' + business.bid);
+		//console.log(business);
+		var itemList = finalMapping[bid];
+		if (itemList == null) {
+			itemList = [];
+		}
+		//console.log('ITEM LIST: ' + itemList);
+		itemList.push(item);
+		finalMapping[bid] = itemList;
+	}
+	
+	/*for (bid in finalMapping) {
+		console.log(bid);
+		console.log('    ' + finalMapping[bid]);
+	}
+
+	for (bid in idToBusiness) {
+		console.log(bid);
+		console.log('    ' + idToBusiness[bid].name);
+	}*/
+
+	callback(finalMapping, idToBusiness);
+}
+
+
+//JARED'S CODE
+var shortestDistanceMetric = function(obj, startAddress, callback) {
+	
+	//map of type bid --> [todo items]
+	var suggestions = {};
+	//map of type bid --> business_obj
+	var idsToBusinesses = {};
+	//list of any to-do items not satisfied
+	var unsatisfiedToDos = [];
+	callback(suggestions, idsToBusinesses, unsatisfiedToDos);
+	
+}
 
 var leastBusinessesMetric = function(obj, callback) {
 	//Reverse dict from businesses to to-do item
@@ -76,7 +202,7 @@ var leastBusinessesMetric = function(obj, callback) {
 	//List of all todo items
 	var allItems = [];
 	//Any todo items that are satisfied by no businesses
-	var unsatisfiedToDos;
+	var unsatisfiedToDos = [];
 
 	for (var toDoItem in obj) {
 		allItems.push(toDoItem)
@@ -109,8 +235,8 @@ var leastBusinessesMetric = function(obj, callback) {
 	    return second[1] - first[1];
 	});
 
-	//Dict from suggested business to the items it satisfies
-	var suggestedBusinesses = {};
+	//list of the ids of suggested businesses
+	var suggestedBusinesses = [];
 
 	for (var i = 0; i < sortedByCount.length; i++) {
 		var obj = sortedByCount[i];
@@ -133,7 +259,7 @@ var leastBusinessesMetric = function(obj, callback) {
 		item -- The decision for which single business to suggest for an item if multiple in the solution satisfy it will be made based 
 		on superior ranking */
 		if (beingUsed) {
-			suggestedBusinesses[businessId] = satisfiedItems;
+			suggestedBusinesses.push(businessId);
 		}
 
 		//console.log('   current state of allItems: ' + allItems);
@@ -143,9 +269,8 @@ var leastBusinessesMetric = function(obj, callback) {
 		}
 	}
 
-	/*for (business in suggestedBusinesses) {
-		console.log(business);
-		console.log(suggestedBusinesses[business]);
+	/*for (var i = 0; i < suggestedBusinesses.length; i++) {
+		console.log(suggestedBusinesses[i]);
 	}*/
 	
 	callback(suggestedBusinesses, unsatisfiedToDos);

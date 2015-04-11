@@ -1,23 +1,36 @@
+var oracledb;
+var dbConfig;
 
 exports.init = function(callback) {
-	/*console.log('routes.init called');
-	var oracledb =  require("oracledb");
-	console.log('after require');
+	oracledb =  require('oracledb');
+	dbConfig = require('./dbconfig.js');
 
-	var connectData = { 
-		  user: "admin", 
-		  password: "cis450project", 
-		  connectString: "cis450projectdb.cc2zrrk5p1po.us-east-1.rds.amazonaws.com"
-	};
-
-	oracledb.getConnection(connectData, function(err, connection) {
+	oracledb.getConnection(
+	  {
+	    user          : dbConfig.user,
+	    password      : dbConfig.password,
+	    connectString : dbConfig.connectString
+	  },
+	  function(err, connection)
+	  {
 	    if (err) {
-	    	console.log(err.message);
-	    } else {
-	    	console.log("CONNECTED");
+	      console.error('CONNECT ERR: ' + err.message);
+	      return;
 	    }
-	});
-	*/
+
+	    console.log('Connection was successful!');
+
+	    connection.release(
+	      function(err)
+	      {
+	        if (err) {
+	          console.error('RELEASE ERR: '+ err.message);
+	          return;
+	        }
+	      });
+	  });
+	
+	
 	callback();
 };
 

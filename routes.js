@@ -59,34 +59,59 @@ exports.displayResults = function(req, res) {
 	//res.render('show_results', {});
 }
 
+var parseToDoList = function(todolist, callback) {
+	var newList = [];
+	for (var i = 0; i < todolist.length; i++) {
+		var item = todolist[i];
+		if (item.indexOf('buy ') == 0 || item.indexOf('Buy ') == 0) {
+			item = item.slice(4);
+		} else if (item.indexOf('go to ') == 0 || item.indexOf('Go to ') == 0) {
+			item = item.slice(6);
+		} else if (item.indexOf('get ') == 0 || item.indexOf('Get ') == 0) {
+			item = item.slice(4);
+		} else if (item.indexOf('do ') == 0 || item.indexOf('Do ') == 0) {
+			item = item.slice(3);
+		} else if (item.indexOf('pick up ') == 0 || item.indexOf('Pick up ') == 0) {
+			item = item.slice(8);
+		}
+		newList.push(item);
+	}
+	callback(newList);
+} 
+
 
 //NINA'S CODE -- arguments passed in are the user's todo list items, and the user's starting address
 var getBusinessesForList = function(todoList, startAddress, callback) {
 	//A dictionary that maps todo_item --> a set of json structures representing the businesses at which
 	//you could complete that todo_item
 	var itemsToBusinesses = {}; 
+	
 	// function getIdMap(result, todolist, lat, long, radius){
     var json = '{';            // the json to return 
+    
+    parseToDoList(todoList, function(parsedList) {
+    	console.log(parsedList);
+    });
 
     // for each to do item search for businesses
-      for(var i = 0; i < todolist.length; i++){
+    /*for (var i = 0; i < todolist.length; i++){
         json = json + '"'+ todolist[i] +  '" : ' + '[';
         var words = todolist[i].split(" ");
 
         // check for category matches for each word in an item 
-        for(var j = 0; j < words.length; j++){
-          var businesses = getCategoryBusinesses(words[i], lat, long, radius)
-          json = json + businesses;
-          var businesses = getBusinesses(words[j], lat, long, radius);
-          json = json + businesses; 
+        for (var j = 0; j < words.length; j++){
+        	var businesses = getCategoryBusinesses(words[i], lat, long, radius);
+        	json = json + businesses;
+        	var businesses = getBusinesses(words[j], lat, long, radius);
+        	json = json + businesses; 
         }
         json = json + ']';
-      }
+    }
     json = json + '}';
     return json;
 }
 	
-	callback(itemsToBusinesses);
+	callback(itemsToBusinesses);*/
 };
 
 

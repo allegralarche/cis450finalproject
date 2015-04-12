@@ -1,33 +1,23 @@
-var oracledb = require('oracledb');
-var connectionData = { 
-  "hostname": "cis550hw1.cfoish237b6z.us-west-2.rds.amazonaws.com", 
-  "user": "cis550students", 
-  "password": "cis550hw1", 
-  "database": "IMDB" };
+var dbConnection;
 
-function getIdMap(result, todolist, lat, long, radius){
-      var json = '{';            // the json to return 
-
-      // for each to do item search for businesses
-      for(var i = 0; i < todolist.length; i++){
-        json = json + '"'+ todolist[i] +  '" : ' + '[';
-        var words = todolist[i].split(" ");
-
-        // check for category matches for each word in an item 
-        for(var j = 0; j < words.length; j++){
-          var businesses = getCategoryBusinesses(words[i], lat, long, radius)
-          json = json + businesses;
-          var businesses = getBusinesses(words[j], lat, long, radius);
-          json = json + businesses; 
-        }
-        json = json + ']';
-      }
-      json = json + '}';
-      return json;
+exports.init = function(callback) {
+	var oracledb =  require('oracledb');
+	var dbConfig = require('./dbconfig.js');
+	
+	oracledb.getConnection(
+		{ user : dbConfig.user, password : dbConfig.password, connectString : dbConfig.connectString },
+		function(err, connection) {
+			if (err) {
+				console.error('CONNECT ERR: ' + err.message);
+			    return;
+			}
+			console.log('Connection was successful!');
+			dbConnection = connection;
+	});	
+	callback();
 }
 
-
-function getBusinesses(keyword, lat, long, radius){
+exports.getBusinesses = function(keyword, lat, long, radius) {
     connection.execute(
     	      "SELECT *"
       	    + "FROM offers O "
@@ -59,7 +49,7 @@ function getBusinesses(keyword, lat, long, radius){
 }
 
 
-function getCategoryBusinesses(keyword, lat, long, radius){
+exports.getCategoryBusinesses = function(keyword, lat, long, radius){
     connection.execute(
   	      "SELECT *"
   	    + "FROM product P "

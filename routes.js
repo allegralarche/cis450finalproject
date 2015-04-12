@@ -1,29 +1,7 @@
-var dbConfig;
-var dbConnection;
+var models;
 
 exports.init = function(callback) {
-	var oracledb =  require('oracledb');
-	dbConfig = require('./dbconfig.js');
-
-	oracledb.getConnection(
-	  {
-	    user          : dbConfig.user,
-	    password      : dbConfig.password,
-	    connectString : dbConfig.connectString
-	  },
-	  function(err, connection)
-	  {
-	    if (err) {
-	      console.error('CONNECT ERR: ' + err.message);
-	      return;
-	    }
-
-	    console.log('Connection was successful!');
-
-	    dbConnection = connection;
-	  });
-	
-	
+	models = require('./models.js');
 	callback();
 };
 
@@ -34,12 +12,12 @@ exports.enterList = function(req, res) {
 //This route should be called (as a GET request) when the todo list is submitted
 exports.processList = function(req, res) {
 	var todolist = req.body.list;
-	console.log('SUBMITTED LIST: ' + todolist);
-	var startAddress = req.body.startingAddress;
+	var lat = req.body.latitude;
+	var long = req.body.longitude;
 	var useMinimalMetric = req.body.useMinimalMetric;
 	
-	getBusinessesForList(todolist, startAddress, function(businessesStruct) {
-		bestBusinessesAlgorithm(businessesStruct, startAddress, true, 
+	getBusinessesForList(todolist, lat, long, function(businessesStruct) {
+		bestBusinessesAlgorithm(businessesStruct, lat, long, true, 
 				function(idsToItems, idsToBusinesses, unsatisfiedItems) {
 			res.send({idsToItems:idsToItems, idsToBusinesses:idsToBusinesses, unsatisfiedItems:unsatisfiedItems});
 		});
@@ -59,6 +37,7 @@ exports.displayResults = function(req, res) {
 	//res.render('show_results', {});
 }
 
+// Parse out any expected starter phrases from the todo list
 var parseToDoList = function(todolist, callback) {
 	var newList = [];
 	for (var i = 0; i < todolist.length; i++) {
@@ -81,103 +60,34 @@ var parseToDoList = function(todolist, callback) {
 
 
 //NINA'S CODE -- arguments passed in are the user's todo list items, and the user's starting address
-var getBusinessesForList = function(todoList, startAddress, callback) {
+var getBusinessesForList = function(todoList, startLatitude, startLongitude, callback) {
 	//A dictionary that maps todo_item --> a set of json structures representing the businesses at which
 	//you could complete that todo_item
 	var itemsToBusinesses = {}; 
 	
-	// function getIdMap(result, todolist, lat, long, radius){
     var json = '{';            // the json to return 
     
-    parseToDoList(todoList, function(parsedList) {
-    	console.log(parsedList);
-    });
-
-    // for each to do item search for businesses
-    /*for (var i = 0; i < todolist.length; i++){
-        json = json + '"'+ todolist[i] +  '" : ' + '[';
-        var words = todolist[i].split(" ");
-
-        // check for category matches for each word in an item 
-        for (var j = 0; j < words.length; j++){
-        	var businesses = getCategoryBusinesses(words[i], lat, long, radius);
-        	json = json + businesses;
-        	var businesses = getBusinesses(words[j], lat, long, radius);
-        	json = json + businesses; 
-        }
+    parseToDoList(todoList, function(list) {
+    	for (var i = 0; i < list.length; i++) {
+            json = json + '"'+ list[i] +  '" : ' + '[';
+            var words = todolist[i].split(" ");
+            // check for category matches for each word in an item 
+            for (var j = 0; j < words.length; j++){
+            	//var businesses = models.getCategoryBusinesses(words[j], startLatitude, startLongitude, radius);
+            	//json = json + businesses;
+            	
+            }
+    	}
+    });    
+/*
+       
         json = json + ']';
     }
     json = json + '}';
     return json;
-}
+	}*/
 	
-	callback(itemsToBusinesses);*/
 };
-
-
-function getBusinesses(keyword, lat, long, radius){
-    connection.execute(
-    	      "SELECT *"
-      	    + "FROM offers O "
-      	    + "INNER JOIN business B ON B.BUSINESS_ID = O.BUSINESS_ID"
-      	    + "WHERE O.CATEGORY_NAME LIKE %" + keyword + "% AND"
-            +        "SQRT((B.LATITUDE - " + lat + ") ^2 + "
-            + "(B.LONGITUDE - " + long + ")^2) < " +  radius,
-    	      function(err, result)
-    	      {
-    	        if (err) { 
-    	        	console.error(err); 
-    	        	return; 
-    	        	}
-    	        var rows = result.rows;
-    	        var result = "";
-    	        for (var i = 0; i < rows.length; i++){
-    	        	data = JSON.parse(rows[i]);
-    	        	result += "{";
-    	        	result += "\"name\":\"" 	+ data.NAME 	   + "\", ";
-    	        	result += "\"bid\":\"" 		+ data.BUSINESS_ID + "\", ";
-    	        	result += "\"address\":\"" 	+ data.ADDRESS 	   + "\", ";
-    	        	result += "\"rating\":\"" 	+ data.RATING	   + "\", ";
-    	        	result += "\"lat\":\"" 		+ data.LATITUDE    + "\", ";
-    	        	result += "\"long\":\"" 	+ data.LONGITUDE   + "\", ";
-    	        	result += "}";
-    	        }
-    	      });
-  return result;
-}
-
-
-function getCategoryBusinesses(keyword, lat, long, radius){
-    connection.execute(
-  	      "SELECT *"
-  	    + "FROM product P "
-  	    + "INNER JOIN offers O ON O.CATEGORY_NAME = P.CATEGORY_NAME"
-  	    + "INNER JOIN business B ON B.BUSINESS_ID = O.BUSINESS_ID"
-  	    + "WHERE P.NAME LIKE %" + keyword + "% AND"
-            +        "SQRT((B.LATITUDE - " + lat + ") ^2 + "
-            + "(B.LONGITUDE - " + long + ")^2) < " +  radius,
-  	      function(err, result)
-  	      {
-  	        if (err) { 
-  	        	console.error(err); 
-  	        	return; 
-  	        	}
-  	        var rows = result.rows;
-  	        var result = "";
-  	        for (var i = 0; i < rows.length; i++){
-  	        	data = JSON.parse(rows[i]);
-	        	result += "{";
-	        	result += "\"name\":\"" 	+ data.NAME 	   + "\", ";
-	        	result += "\"bid\":\"" 		+ data.BUSINESS_ID + "\", ";
-	        	result += "\"address\":\"" 	+ data.ADDRESS 	   + "\", ";
-	        	result += "\"rating\":\"" 	+ data.RATING	   + "\", ";
-	        	result += "\"lat\":\"" 		+ data.LATITUDE    + "\", ";
-	        	result += "\"long\":\"" 	+ data.LONGITUDE   + "\", ";
-	        	result += "}";
-  	        }
-  	      });
-return result;
-}
 
 /*
  * Expected format of itemsToBusinesses:
@@ -190,7 +100,7 @@ return result;
  */
 
 //ALIZA AND JARED'S CODE
-var bestBusinessesAlgorithm = function(itemsToBusinesses, startAddress, useMinimalMetric, callback) {
+var bestBusinessesAlgorithm = function(itemsToBusinesses, latitude, longitude, useMinimalMetric, callback) {
 
 	//IN FOR TESTING ONLY
 	var item_dict = '{' +
@@ -227,7 +137,7 @@ var bestBusinessesAlgorithm = function(itemsToBusinesses, startAddress, useMinim
 			});
 		});
 	} else {
-		shortestDistanceMetric(obj, startAddress, function(finalMapping, idsToBusinesses, unsatisfiedToDos) {
+		shortestDistanceMetric(obj, latitude, longitude, function(finalMapping, idsToBusinesses, unsatisfiedToDos) {
 			callback(finalMapping, idsToBusinesses, unsatisfiedToDos);
 		});
 	}	
@@ -298,7 +208,7 @@ var breakTies = function(suggestions, originalObj, callback) {
 
 
 //JARED'S CODE
-var shortestDistanceMetric = function(obj, startAddress, callback) {
+var shortestDistanceMetric = function(obj, startLatitude, startLongitude, callback) {
 	
 	//map of type bid --> [todo items]
 	var suggestions = {};

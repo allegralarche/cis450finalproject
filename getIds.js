@@ -5,7 +5,7 @@ var connectionData = {
   "password": "cis550hw1", 
   "database": "IMDB" };
 
-function getIdMap(result, todolist){
+function getIdMap(result, todolist, lat, long, radius){
     oracledb.connect(connectionData, function(err, connection){
     if (err) {
       console.error(err.message);
@@ -21,9 +21,9 @@ function getIdMap(result, todolist){
 
         // check for category matches for each word in an item 
         for(var j = 0; j < words.length; j++){
-          var businesses = getCategoryBusinesses(words[i])
+          var businesses = getCategoryBusinesses(words[i], lat, long, radius)
           json = json + businesses;
-          var businesses = getBusinesses(words[j]);
+          var businesses = getBusinesses(words[j], lat, long, radius);
           json = json + businesses; 
         }
         json = json + ']';
@@ -36,12 +36,14 @@ function getIdMap(result, todolist){
 }
 
 
-function getBusinesses(keyword){
+function getBusinesses(keyword, lat, long, radius){
     connection.execute(
     	      "SELECT *"
       	    + "FROM offers O "
       	    + "INNER JOIN business B ON B.BUSINESS_ID = O.BUSINESS_ID"
-      	    + "WHERE O.CATEGORY_NAME LIKE %" + keyword + "%",
+      	    + "WHERE O.CATEGORY_NAME LIKE %" + keyword + "% AND"
+            +        "SQRT((B.LATITUDE - " + lat + ") ^2 + "
+            + "(B.LONGITUDE - " + long + ")^2) < " +  radius,
     	      function(err, result)
     	      {
     	        if (err) { 
@@ -66,13 +68,15 @@ function getBusinesses(keyword){
 }
 
 
-function getCategoryBusinesses(keyword){
+function getCategoryBusinesses(keyword, lat, long, radius){
     connection.execute(
   	      "SELECT *"
   	    + "FROM product P "
   	    + "INNER JOIN offers O ON O.CATEGORY_NAME = P.CATEGORY_NAME"
   	    + "INNER JOIN business B ON B.BUSINESS_ID = O.BUSINESS_ID"
-  	    + "WHERE P.NAME LIKE %" + keyword + "%",
+  	    + "WHERE P.NAME LIKE %" + keyword + "% AND"
+            +        "SQRT((B.LATITUDE - " + lat + ") ^2 + "
+            + "(B.LONGITUDE - " + long + ")^2) < " +  radius,
   	      function(err, result)
   	      {
   	        if (err) { 

@@ -58,35 +58,15 @@ var parseToDoList = function(todolist, callback) {
 	callback(newList);
 } 
 
-
-//NINA'S CODE -- arguments passed in are the user's todo list items, and the user's starting address
-var getBusinessesForList = function(todoList, startLatitude, startLongitude, callback) {
-	//A dictionary that maps todo_item --> a set of json structures representing the businesses at which
-	//you could complete that todo_item
-	var itemsToBusinesses = {}; 
-	
-    var json = '{';            // the json to return 
-    
+var getBusinessesForList = function(todoList, startLatitude, startLongitude, callback) {	
+    var json = '{';
     parseToDoList(todoList, function(list) {
-    	for (var i = 0; i < list.length; i++) {
-            json = json + '"'+ list[i] +  '" : ' + '[';
-            var words = todolist[i].split(" ");
-            // check for category matches for each word in an item 
-            for (var j = 0; j < words.length; j++){
-            	//var businesses = models.getCategoryBusinesses(words[j], startLatitude, startLongitude, radius);
-            	//json = json + businesses;
-            	
-            }
-    	}
-    });    
-/*
-       
-        json = json + ']';
-    }
-    json = json + '}';
-    return json;
-	}*/
-	
+    	models.getAllBusinesses(0, list, json, function(json) {
+    		 json = json + '}';
+    		 console.log('JSON: ' + json);
+    		 calback(json);
+    	});
+    });
 };
 
 /*

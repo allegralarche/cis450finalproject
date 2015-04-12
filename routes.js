@@ -1,8 +1,8 @@
-var oracledb;
 var dbConfig;
+var dbConnection;
 
 exports.init = function(callback) {
-	oracledb =  require('oracledb');
+	var oracledb =  require('oracledb');
 	dbConfig = require('./dbconfig.js');
 
 	oracledb.getConnection(
@@ -20,14 +20,7 @@ exports.init = function(callback) {
 
 	    console.log('Connection was successful!');
 
-	    connection.release(
-	      function(err)
-	      {
-	        if (err) {
-	          console.error('RELEASE ERR: '+ err.message);
-	          return;
-	        }
-	      });
+	    dbConnection = connection;
 	  });
 	
 	

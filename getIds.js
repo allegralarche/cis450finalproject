@@ -21,7 +21,7 @@ function getIdMap(result, todolist, lat, long, radius){
 
         // check for category matches for each word in an item 
         for(var j = 0; j < words.length; j++){
-          var businesses = getCategoryBusinesses(words[i], lat, long, radius)
+          var businesses = getCategoryBusinesses(words[i], lat, long, radius);
           json = json + businesses;
           var businesses = getBusinesses(words[j], lat, long, radius);
           json = json + businesses; 
@@ -31,7 +31,7 @@ function getIdMap(result, todolist, lat, long, radius){
       json = json + '}';
       connection.close();
       return json;
-    }c
+    }
   });
 }
 

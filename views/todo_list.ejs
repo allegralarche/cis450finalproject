@@ -1,11 +1,16 @@
 <head>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <link href='/styles/style.css' rel='stylesheet' type='text/css'>
+    <!--<link href='/styles/style.css' rel='stylesheet' type='text/css'>-->
+    <link href='style.css' rel='stylesheet' type='text/css'>
 </head>
-<html>
 <body>
     <div id='main-wrapper'>
+        <h1>Where are you?</h1>
+        <form id='addressForm'>
+            <input type="text" id="address" placeholder='Enter your current address'>
+        </form>
         <h1>What do you have to get done?</h1>
         <form id='taskForm'>
             <input type="text" class="task"></br>
@@ -13,28 +18,46 @@
             <input type="text" class="task"></br>
         </form>
         <p id="addTask">+ Add another task</p>
+        <form id='minimalForm'>
+            <p class='minTags'>Take me to the fewest number of places:</p>
+            <input type='radio' name='minimal' class='minimal' id='min'></br>
+            <p class='minTags'>Take me to the places closest to me:</p>
+            <input type='radio' name='minimal' class='minimal' value='close'>
+        </form>
         <button id='submitBtn'>Submit List</button>
     </div>
 </body>
-</html>
 
 <script>
     var todoList = [];
-    //The address the user enters
-    var startingAddress;
-    //Boolean indicating whether to use minimal businesses metric or shortest distance metric
+    // boolean indicating whether to use minimal businesses metric or shortest distance metric
     var useMinimalMetric;
+    // latitude and longitude of place that user enters
+    var lat = 0;
+    var lng = 0;
 
 	$('#submitBtn').click(function() {
+
         // get all the data in the task inputs and make a list out of them
         $('.task').each(function() {
             var task = $(this).val();
             if(task !== "") {
                 todoList[todoList.length] = task;
             }
-        })
+        });
+
+        // get the latitude and longitude of the address the user entered
+        var place = autocomplete.getPlace();
+        lat = place.geometry.location.lat();
+        console.log("lat: " + lat);
+        lng = place.geometry.location.lng();
+        console.log("lng: " + lng);
+
+        useMinimalMetric = document.getElementById('min').checked;
+        console.log(useMinimalMetric);
+
         // pass this list into the post request
-	 	$.post('/processList', {list:todoList, startingAddress:startingAddress, useMinimalMetric:useMinimalMetric}, 
+	 	$.post('/processList', {list:todoList, latitude:lat, longitude:lng, useMinimalMetric:useMinimalMetric}, 
 	 		function(responseObj) {
 	    	  var idsToItems = responseObj.idsToItems;
 	    	  var idsToBusinesses = responseObj.idsToBusinesses;
@@ -52,5 +75,15 @@
 
     $('#addTask').click(function() {
         $('#taskForm').append("<input type='text' class='task'></br>");
+    });
+
+
+    $(document).ready(function() {
+        var input = document.getElementById('address');
+        var options = {
+            types: ['address']
+        };
+
+        autocomplete = new google.maps.places.Autocomplete(input, options);
     });
 </script>

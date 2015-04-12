@@ -2,7 +2,7 @@ var oracledb;
 var dbConfig;
 
 exports.init = function(callback) {
-	oracledb =  require('oracledb');
+	/*oracledb =  require('oracledb');
 	dbConfig = require('./dbconfig.js');
 
 	oracledb.getConnection(
@@ -28,7 +28,7 @@ exports.init = function(callback) {
 	          return;
 	        }
 	      });
-	  });
+	  });*/
 	
 	
 	callback();

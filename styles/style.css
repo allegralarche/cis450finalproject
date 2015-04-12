@@ -11,6 +11,7 @@ h1 {
     font-size: 40px;
     font-weight: lighter;
     color: #990000;
+    margin: 25px 0px 0px 0px;
 }
 button {
     text-decoration: none;
@@ -22,7 +23,7 @@ button {
     border-radius: 4px;
     border: none;
 }
-.task {
+.task, #address {
     width: 60%;
     height: 40px;
     margin: 10px;
@@ -32,4 +33,9 @@ button {
 #addTask:hover, button:hover{
     cursor: pointer;
     opacity: .7;
+}
+
+.minTags {
+    display: inline-block;
+    color: #990000;
 }

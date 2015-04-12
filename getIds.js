@@ -6,12 +6,6 @@ var connectionData = {
   "database": "IMDB" };
 
 function getIdMap(result, todolist, lat, long, radius){
-    oracledb.connect(connectionData, function(err, connection){
-    if (err) {
-      console.error(err.message);
-      return;
-    }
-    else{
       var json = '{';            // the json to return 
 
       // for each to do item search for businesses
@@ -29,10 +23,7 @@ function getIdMap(result, todolist, lat, long, radius){
         json = json + ']';
       }
       json = json + '}';
-      connection.close();
       return json;
-    }
-  });
 }
 
 

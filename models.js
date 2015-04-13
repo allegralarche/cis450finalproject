@@ -103,11 +103,12 @@ getBusinessesFromDB = function(keyword, lat, long, useProductTable, callback) {
 	    var businesses = "";
         for (var i = 0; i < rows.length; i++) {
         	row = rows[i];
-        	//console.log(row);
+        	address = String(row[2]).trim();
+        	address = address.replace(/\t/g, " ").replace(/\n/g, " ");
         	businesses += "{";
             businesses += "\"name\":\"" 	+ String(row[1]).trim() + "\", ";
             businesses += "\"bid\":\"" 		+ String(row[0]).trim() + "\", ";
-            //businesses += "\"address\":\"" 	+ String(row[2]).trim() + "\", ";
+            businesses += "\"address\":\"" 	+ address               + "\", ";
             businesses += "\"rating\":\"" 	+ String(row[5]).trim() + "\", ";
             businesses += "\"lat\":\"" 		+ String(row[3]).trim() + "\", ";
             businesses += "\"long\":\"" 	+ String(row[4]).trim() + "\" ";

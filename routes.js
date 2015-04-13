@@ -41,7 +41,7 @@ var getBusinessesForList = function(todoList, startLatitude, startLongitude, cal
     var json = '{';
 	models.getAllBusinesses(0, todoList, json, startLatitude, startLongitude, function(json) {
 		 json = json + '}';
-		 console.log('JSON: ' + json);
+		 //console.log('JSON: ' + json);
 		 callback(json);
 	});
 };

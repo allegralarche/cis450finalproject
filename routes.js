@@ -191,9 +191,9 @@ var leastBusinessesMetric = function(obj, callback) {
 	for (var i = 0; i < sortedByCount.length; i++) {
 		var obj = sortedByCount[i];
 		businessId = obj[0];
-		console.log('looking at business: ' + businessId);
+		//console.log('looking at business: ' + businessId);
 		satisfiedItems = businessesToItems[businessId];
-		console.log('   items it satisfies: ' + satisfiedItems);
+		//console.log('   items it satisfies: ' + satisfiedItems);
 		//Remove all of the items that this business covers from the remaining list of todo items
 		var beingUsed = false;
 		for (var j = 0; j < satisfiedItems.length; j++) {

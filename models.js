@@ -2,7 +2,7 @@ var dbConnection;
 var SEARCH_RADIUS;
 
 exports.init = function(callback) {
-	SEARCH_RADIUS = 15; // 15 km for now
+	SEARCH_RADIUS = 10; // kilometers
 	var oracledb =  require('oracledb');
 	var dbConfig = require('./dbconfig.js');
 	
@@ -38,25 +38,51 @@ var itemToKeyword = function(item, callback) {
 	} else if (item.indexOf('Shop for ') == 0 || item.indexOf('shop for') == 0) {
 		item = item.slice(9);
 	}
-	var words = item.split(" ");
-	//**Just using first word for now, should change if time
-	var word = words[0];
-	word = word.slice(0,1).toUpperCase() + word.slice(1);
-	return word;
+	if (item.indexOf('New ') == 0 || item.indexOf('new ') == 0) {
+		item = item.slice(4);
+	}
+	
+	//Capitalize first letter of the keywords because this is how everything is in the DB
+	item = item.slice(0,1).toUpperCase() + item.slice(1);
+		
+	//Returns 2 keywords to try: first the entire item, and then a single word in case that doesn't work
+	var oneWord = item.split(" ")[0];
+	return [item, oneWord];
 } 
 
 var itemToBusinesses = function(list, index, lat, long, callback) {
 	var item = list[index]; // the full, original todo item as entered
-	var keyword = itemToKeyword(item); // the keyword resulting from parsing the item, used for querying the db
+	var keywords = itemToKeyword(item); // the keyword resulting from parsing the item, used for querying the db
+	var fullKeyword = keywords[0];
+	var oneWord = keywords[1];
 	var allBusinesses = '[';
-	getBusinessesFromDB(keyword, lat, long, false, function(businessList1) {
+	// Try the full keyword with categories query
+	getBusinessesFromDB(fullKeyword, lat, long, false, function(businessList1) {
 		if (businessList1.length > 0) {
 			allBusinesses = allBusinesses + businessList1 + '],';
      		callback(item, allBusinesses, index);
 		} else {
-			getBusinessesFromDB(keyword, lat, long, true, function(businessList2) {
-	     		allBusinesses = allBusinesses + businessList2 + '],';
-	     		callback(item, allBusinesses, index);
+			// Try the full keyword with products query
+			getBusinessesFromDB(fullKeyword, lat, long, true, function(businessList2) {
+				if (businessList2.length > 0) {
+		     		allBusinesses = allBusinesses + businessList2 + '],';
+		     		callback(item, allBusinesses, index);
+				} else {
+					// Try the single word with categories query
+					getBusinessesFromDB(oneWord, lat, long, false, function(businessList3) {
+						if (businessList3.length > 0) {
+							allBusinesses = allBusinesses + businessList3 + '],';
+				     		callback(item, allBusinesses, index);
+						} else {
+							// Try the single word with products query
+							getBusinessesFromDB(oneWord, lat, long, true, function(businessList4) {
+								allBusinesses = allBusinesses + businessList4 + '],';
+					     		callback(item, allBusinesses, index);
+							});
+						}
+					});
+				}
+
 	     	});
 		}
     });

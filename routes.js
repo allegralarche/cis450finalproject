@@ -60,12 +60,12 @@ var getBusinessesForList = function(todoList, startLatitude, startLongitude, cal
 var bestBusinessesAlgorithm = function(itemsToBusinesses, latitude, longitude, useMinimalMetric, callback) {
 
 	var obj = JSON.parse(itemsToBusinesses);
+	//var obj = itemsToBusinesses;
 	
 	if (useMinimalMetric) {
 		leastBusinessesMetric(obj, function(suggestions, unsatisfiedToDos) {
-			console
 			//finalMapping is of type bid --> [item], idsToBusinesses is of type bid --> business_object
-			breakTies(suggestions, obj, function(finalMapping, idsToBusinesses) {
+			breakTies(suggestions, obj, unsatisfiedToDos, function(finalMapping, idsToBusinesses) {
 				callback(finalMapping, idsToBusinesses, unsatisfiedToDos);
 			});
 		});
@@ -76,9 +76,12 @@ var bestBusinessesAlgorithm = function(itemsToBusinesses, latitude, longitude, u
 	}	
 };
 
-var breakTies = function(suggestions, originalObj, callback) {
+var breakTies = function(suggestions, originalObj, unsatisfiedItems, callback) {
 	itemToBusiness = {};
 	for (var toDoItem in originalObj) { 
+		if (unsatisfiedItems.indexOf(toDoItem) > -1 ) {
+			continue;
+		}
 		var allBusinesses = originalObj[toDoItem];
 		var potentialBusinesses = [];
 		/* Loop through all of the businesses that satisfy this item from the original JSON,
@@ -139,20 +142,6 @@ var breakTies = function(suggestions, originalObj, callback) {
 	callback(finalMapping, idToBusiness);
 }
 
-
-//JARED'S CODE
-var shortestDistanceMetric = function(obj, startLatitude, startLongitude, callback) {
-	
-	//map of type bid --> [todo items]
-	var suggestions = {};
-	//map of type bid --> business_obj
-	var idsToBusinesses = {};
-	//list of any to-do items not satisfied
-	var unsatisfiedToDos = [];
-	callback(suggestions, idsToBusinesses, unsatisfiedToDos);
-	
-}
-
 var leastBusinessesMetric = function(obj, callback) {
 	//Reverse dict from businesses to to-do item
 	var businessesToItems = {};
@@ -175,10 +164,15 @@ var leastBusinessesMetric = function(obj, callback) {
 			itemCount = businessesToCount[businessId];
 			if (itemList == null) {
 				itemList = [];
-				itemCount = 1;
+				itemCount = 0;
 			}
-			itemList.push(toDoItem);
-			itemCount += 1;
+			if (itemList.indexOf(toDoItem) == -1 ) {
+				itemList.push(toDoItem);
+				itemCount += 1;
+			}
+			if (itemCount > 1) {
+				console.log('BUSINESS WITH MORE THAN ONE ITEM: ' + businessId);
+			}
 			businessesToItems[businessId] = itemList;
 			businessesToCount[businessId] = itemCount;
 		}
@@ -200,9 +194,9 @@ var leastBusinessesMetric = function(obj, callback) {
 	for (var i = 0; i < sortedByCount.length; i++) {
 		var obj = sortedByCount[i];
 		businessId = obj[0];
-		//console.log('looking at business: ' + businessId);
+		console.log('looking at business: ' + businessId);
 		satisfiedItems = businessesToItems[businessId];
-		//console.log('   items it satisfies: ' + satisfiedItems);
+		console.log('   items it satisfies: ' + satisfiedItems);
 		//Remove all of the items that this business covers from the remaining list of todo items
 		var beingUsed = false;
 		for (var j = 0; j < satisfiedItems.length; j++) {
@@ -228,10 +222,23 @@ var leastBusinessesMetric = function(obj, callback) {
 		}
 	}
 
-	/*for (var i = 0; i < suggestedBusinesses.length; i++) {
+	for (var i = 0; i < suggestedBusinesses.length; i++) {
 		console.log(suggestedBusinesses[i]);
-	}*/
+	}
 	
 	callback(suggestedBusinesses, unsatisfiedToDos);
+}
+
+//JARED'S CODE
+var shortestDistanceMetric = function(obj, startLatitude, startLongitude, callback) {
+	
+	//map of type bid --> [todo items]
+	var suggestions = {};
+	//map of type bid --> business_obj
+	var idsToBusinesses = {};
+	//list of any to-do items not satisfied
+	var unsatisfiedToDos = [];
+	callback(suggestions, idsToBusinesses, unsatisfiedToDos);
+	
 }
 

@@ -33,6 +33,10 @@ var itemToKeyword = function(item, callback) {
 		item = item.slice(8);
 	} else if (item.indexOf('Join ') == 0 || item.indexOf('join ') == 0) {
 		item = item.slice(5);
+	} else if (item.indexOf('Look for ') == 0 || item.indexOf('look for ') == 0) {
+		item = item.slice(9);
+	} else if (item.indexOf('Shop for ') == 0 || item.indexOf('shop for') == 0) {
+		item = item.slice(9);
 	}
 	var words = item.split(" ");
 	//**Just using first word for now, should change if time
@@ -106,12 +110,12 @@ getBusinessesViaCategories = function(keyword, lat, long, callback) {
         	row = rows[i];
         	//console.log(row);
         	businesses += "{";
-            businesses += "\"name\":\"" 	+ row[1] 	   + "\", ";
-            businesses += "\"bid\":\"" 		+ row[0] + "\", ";
-            businesses += "\"address\":\"" 	+ row[2] 	   + "\", ";
-            businesses += "\"rating\":\"" 	+ row[5]	   + "\", ";
-            businesses += "\"lat\":\"" 		+ row[3]    + "\", ";
-            businesses += "\"long\":\"" 	+ row[4]   + "\" ";
+            businesses += "\"name\":\"" 	+ String(row[1]).trim() + "\", ";
+            businesses += "\"bid\":\"" 		+ String(row[0]).trim() + "\", ";
+            //businesses += "\"address\":\"" 	+ String(row[2]).trim() + "\", ";
+            businesses += "\"rating\":\"" 	+ String(row[5]).trim() + "\", ";
+            businesses += "\"lat\":\"" 		+ String(row[3]).trim() + "\", ";
+            businesses += "\"long\":\"" 	+ String(row[4]).trim() + "\" ";
             businesses += "},";
         }
         businesses = businesses.slice(0, businesses.length-1);

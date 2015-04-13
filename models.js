@@ -2,7 +2,7 @@ var dbConnection;
 var SEARCH_RADIUS;
 
 exports.init = function(callback) {
-	SEARCH_RADIUS = 10; // 10 miles for now?
+	SEARCH_RADIUS = 15; // 15 km for now
 	var oracledb =  require('oracledb');
 	var dbConfig = require('./dbconfig.js');
 	
@@ -91,14 +91,15 @@ getBusinessesFromDB = function(keyword, lat, long, useProductTable, callback) {
 	  	    + "INNER JOIN Offers O ON B.BUSINESS_ID = O.BUSINESS_ID "
 	  	    + "WHERE O.CATEGORY_NAME LIKE '%" + keyword + "%'";
 	}
-    dbConnection.execute(stmt, function(err, result) {
+    dbConnection.execute(stmt, {}, {"maxRows":5000}, function(err, result) {
   	    if (err) { 
   	    	console.error('SQL ERR: ' + err); 
 	        return; 
 	    }
 	    var rows = result.rows;
 	    console.log('NUM ROWS RETURNED: ' + rows.length);
-	    //rows = filterByDistance(rows, lat, long);
+	    rows = filterByDistance(rows, lat, long);
+	    console.log('ROWS AFTER FILTER: ' + rows.length);
 	    //console.log('RESULT OF QUERY: ' + rows);
 	    var businesses = "";
         for (var i = 0; i < rows.length; i++) {
@@ -139,7 +140,7 @@ toRad = function(num) {
 }
 
 var latLongDistance = function(lat1, lon1, lat2, lon2) {
-	console.log(lat1 + ", " + lon1 + ", " + lat2 + ", " + lon2);
+	//console.log(lat1 + ", " + lon1 + ", " + lat2 + ", " + lon2);
 	var R = 6371; // km 
 	var x1 = lat2-lat1;
 	var dLat = toRad(x1); 

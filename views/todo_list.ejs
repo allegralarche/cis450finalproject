@@ -40,7 +40,7 @@
 
         // get all the data in the task inputs and make a list out of them
         $('.task').each(function() {
-            var task = $(this).val();
+            var task = $(this).val().trim();
             if(task !== "") {
                 todoList[todoList.length] = task;
             }

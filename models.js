@@ -50,12 +50,15 @@ var itemToBusinesses = function(list, index, lat, long, callback) {
 	var keyword = itemToKeyword(item); // the keyword resulting from parsing the item, used for querying the db
 	var allBusinesses = '[';
 	getBusinessesFromDB(keyword, lat, long, false, function(businessList1) {
-     	getBusinessesFromDB(keyword, lat, long, true, function(businessList2) {
-     		allBusinesses = allBusinesses + businessList1 + businessList2;
-            allBusinesses = allBusinesses.slice(0, allBusinesses.length-1);
-            allBusinesses += '],';
+		if (businessList1.length > 0) {
+			allBusinesses = allBusinesses + businessList1 + '],';
      		callback(item, allBusinesses, index);
-     	});
+		} else {
+			getBusinessesFromDB(keyword, lat, long, true, function(businessList2) {
+	     		allBusinesses = allBusinesses + businessList2 + '],';
+	     		callback(item, allBusinesses, index);
+	     	});
+		}
     });
 };
 
@@ -110,6 +113,7 @@ getBusinessesFromDB = function(keyword, lat, long, useProductTable, callback) {
             businesses += "\"long\":\"" 	+ String(row[4]).trim() + "\" ";
             businesses += "},";
         }
+        businesses = businesses.slice(0, businesses.length-1);
         callback(businesses);
     });
 };

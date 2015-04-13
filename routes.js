@@ -170,9 +170,6 @@ var leastBusinessesMetric = function(obj, callback) {
 				itemList.push(toDoItem);
 				itemCount += 1;
 			}
-			if (itemCount > 1) {
-				console.log('BUSINESS WITH MORE THAN ONE ITEM: ' + businessId);
-			}
 			businessesToItems[businessId] = itemList;
 			businessesToCount[businessId] = itemCount;
 		}

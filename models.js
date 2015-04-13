@@ -19,32 +19,55 @@ exports.init = function(callback) {
 	callback();
 }
 
-var itemToBusinesses = function(list, index, callback) {
-	var item = list[index];
+//Turn a user's todo item into a keyword to use to query the database
+var itemToKeyword = function(item, callback) {
+	if (item.indexOf('buy ') == 0 || item.indexOf('Buy ') == 0) {
+		item = item.slice(4);
+	} else if (item.indexOf('go to ') == 0 || item.indexOf('Go to ') == 0) {
+		item = item.slice(6);
+	} else if (item.indexOf('get ') == 0 || item.indexOf('Get ') == 0) {
+		item = item.slice(4);
+	} else if (item.indexOf('do ') == 0 || item.indexOf('Do ') == 0) {
+		item = item.slice(3);
+	} else if (item.indexOf('pick up ') == 0 || item.indexOf('Pick up ') == 0) {
+		item = item.slice(8);
+	} else if (item.indexOf('Join ') == 0 || item.indexOf('join ') == 0) {
+		item = item.slice(5);
+	}
 	var words = item.split(" ");
 	//**Just using first word for now, should change if time
-	var word = words[i];
+	var word = words[0];
+	word = word.slice(0,1).toUpperCase() + word.slice(1);
+	return word;
+} 
+
+var itemToBusinesses = function(list, index, lat, long, callback) {
+	var item = list[index]; // the full, original todo item as entered
+	var keyword = itemToKeyword(item); // the keyword resulting from parsing the item, used for querying the db
 	var allBusinesses = '[';
-	getBusinessesViaCategories(word, startLatitude, startLongitude, function(businessList1) {
+	getBusinessesViaCategories(keyword, lat, long, function(businessList1) {
      	//getBusinessesViaProducts(word, startLatitude, startLongitude, function(businessList2) {
-     	allBusinesses = allBusinesses + businessList1 + ']';
+     	allBusinesses = allBusinesses + businessList1 + '],';
      	callback(item, allBusinesses, index);
      	//});
     });
 };
 
-exports.getAllBusinesses = function(i, items, json, callback) {
-	itemToBusinesses(list, i, function(item, businessList, index) {
+getAllBusinesses = function(i, items, json, lat, long, callback) {
+	itemToBusinesses(items, i, lat, long, function(item, businessList, index) {
 		json = json + '"'+ item +  '" : ';
 		json = json + businessList;
+		//console.log('json after iteration of itemToBusinesses: ' + json);
 		if (index == items.length-1) {
+			json = json.slice(0, json.length-1);
 			callback(json);
 		} else {
 			i++;
-			getAllBusinesses(i, items, json, callback);
+			getAllBusinesses(i, items, json, lat, long, callback);
 		}
 	});
 }
+module.exports.getAllBusinesses = getAllBusinesses;
 
 Number.prototype.toRad = function() {
 	return this * Math.PI / 180;
@@ -65,33 +88,35 @@ var latLongDistance = function(lat1, long1, lat2, long2, callback) {
 }
 
 getBusinessesViaCategories = function(keyword, lat, long, callback) {
-    dbConnection.execute(
-    	      "SELECT * FROM Business B "
-      	    + "INNER JOIN Offers O ON B.BUSINESS_ID = O.BUSINESS_ID"
-      	    + "WHERE O.CATEGORY_NAME LIKE %" + keyword + "%",
-           // +        "AND SQRT((B.LATITUDE - " + lat + ") ^2 + "
-          //  + "(B.LONGITUDE - " + long + ")^2) < " +  radius,
-        function(err, result) {
-      	    if (err) { 
-      	    	console.error(err); 
-    	        return; 
-    	    }
-    	    var rows = result.rows;
-    	    var businesses = "";
-	        for (var i = 0; i < rows.length; i++){
-	        	data = JSON.parse(rows[i]);
-	        	businesses += "{";
-	        	businesses += "\"name\":\"" 	+ data.NAME 	   + "\", ";
-	        	businesses += "\"bid\":\"" 		+ data.BUSINESS_ID + "\", ";
-	        	businesses += "\"address\":\"" 	+ data.ADDRESS 	   + "\", ";
-	        	businesses += "\"rating\":\"" 	+ data.RATING	   + "\", ";
-	        	businesses += "\"lat\":\"" 		+ data.LATITUDE    + "\", ";
-	        	businesses += "\"long\":\"" 	+ data.LONGITUDE   + "\", ";
-	        	businesses += "},";
-	        }
-	        businesses = businesses.slice(0, str.length-1);
-	        callback(businesses);
-      	});
+	console.log(keyword);
+	var stmt =   "SELECT * FROM Business B "
+  	    + "INNER JOIN Offers O ON B.BUSINESS_ID = O.BUSINESS_ID "
+  	    + "WHERE O.CATEGORY_NAME LIKE '%" + keyword + "%'";
+       // +        "AND SQRT((B.LATITUDE - " + lat + ") ^2 + "
+      //  + "(B.LONGITUDE - " + long + ")^2) < " +  radius,
+    dbConnection.execute(stmt, function(err, result) {
+  	    if (err) { 
+  	    	console.error('SQL ERR: ' + err); 
+	        return; 
+	    }
+	    var rows = result.rows;
+	    //console.log('RESULT OF QUERY: ' + rows);
+	    var businesses = "";
+        for (var i = 0; i < rows.length; i++) {
+        	row = rows[i];
+        	//console.log(row);
+        	businesses += "{";
+            businesses += "\"name\":\"" 	+ row[1] 	   + "\", ";
+            businesses += "\"bid\":\"" 		+ row[0] + "\", ";
+            businesses += "\"address\":\"" 	+ row[2] 	   + "\", ";
+            businesses += "\"rating\":\"" 	+ row[5]	   + "\", ";
+            businesses += "\"lat\":\"" 		+ row[3]    + "\", ";
+            businesses += "\"long\":\"" 	+ row[4]   + "\" ";
+            businesses += "},";
+        }
+        businesses = businesses.slice(0, businesses.length-1);
+        callback(businesses);
+    });
 };
 
 

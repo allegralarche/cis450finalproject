@@ -37,36 +37,13 @@ exports.displayResults = function(req, res) {
 	//res.render('show_results', {});
 }
 
-// Parse out any expected starter phrases from the todo list
-var parseToDoList = function(todolist, callback) {
-	var newList = [];
-	for (var i = 0; i < todolist.length; i++) {
-		var item = todolist[i];
-		if (item.indexOf('buy ') == 0 || item.indexOf('Buy ') == 0) {
-			item = item.slice(4);
-		} else if (item.indexOf('go to ') == 0 || item.indexOf('Go to ') == 0) {
-			item = item.slice(6);
-		} else if (item.indexOf('get ') == 0 || item.indexOf('Get ') == 0) {
-			item = item.slice(4);
-		} else if (item.indexOf('do ') == 0 || item.indexOf('Do ') == 0) {
-			item = item.slice(3);
-		} else if (item.indexOf('pick up ') == 0 || item.indexOf('Pick up ') == 0) {
-			item = item.slice(8);
-		}
-		newList.push(item);
-	}
-	callback(newList);
-} 
-
 var getBusinessesForList = function(todoList, startLatitude, startLongitude, callback) {	
     var json = '{';
-    parseToDoList(todoList, function(list) {
-    	models.getAllBusinesses(0, list, json, function(json) {
-    		 json = json + '}';
-    		 console.log('JSON: ' + json);
-    		 calback(json);
-    	});
-    });
+	models.getAllBusinesses(0, todoList, json, startLatitude, startLongitude, function(json) {
+		 json = json + '}';
+		 console.log('JSON: ' + json);
+		 callback(json);
+	});
 };
 
 /*
@@ -82,31 +59,7 @@ var getBusinessesForList = function(todoList, startLatitude, startLongitude, cal
 //ALIZA AND JARED'S CODE
 var bestBusinessesAlgorithm = function(itemsToBusinesses, latitude, longitude, useMinimalMetric, callback) {
 
-	//IN FOR TESTING ONLY
-	var item_dict = '{' +
-	'"buy_shirt":' +  
-		'[ {"name":"Target", "bid":"1", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"},' +
-     	  '{"name":"Walmart", "bid": "2", "address": "200 South Columbus", "rating":"2.0", "lat":"0.0", "long":"0.0"} ],' + 
-	'"get haircut":' +
-		'[ {"name":"Walmart", "bid":"2", "address":"4000 Pine Street", "rating":"2.0", "lat":"0.0", "long":"0.0"},' +
-     	  '{"name":"Bob Barber", "bid": "4", "address": "200 South Columbus", "rating":"4.0", "lat":"0.0", "long":"0.0"} ],' +
-    '"deck furniture":' +
-		'[ {"name":"Target", "bid":"1", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"},' +
-		  '{"name":"Walmart", "bid":"2", "address":"4000 Pine Street", "rating":"2.0", "lat":"0.0", "long":"0.0"},' +
-     	  '{"name":"Furniture Depot", "bid": "6", "address": "200 South Columbus", "rating":"4.0", "lat":"0.0", "long":"0.0"} ],' + 
-    '"get milk":' +
-    	'[ {"name":"Pathmark", "bid":"5", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"},' +
-    	  '{"name":"Shoprite", "bid":"7", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"},' +
-     	  '{"name":"Walmart", "bid": "2", "address": "200 South Columbus", "rating":"2.0", "lat":"0.0", "long":"0.0"} ],' + 
-    '"get birthday cake":' +
-    	'[ {"name":"Perfect Pastries", "bid":"8", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"} ], ' +
-    '"get bread":' +
-    	'[ {"name":"Perfect Pastries", "bid":"8", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"},' +
-    	  '{"name":"Walmart", "bid": "2", "address": "200 South Columbus", "rating":"2.0", "lat":"0.0", "long":"0.0"} ]' + 
-    	  '}';
-
-	//SWITCH BACK TO itemsToBusinesses
-	var obj = JSON.parse(item_dict);
+	var obj = JSON.parse(itemsToBusinesses);
 	
 	if (useMinimalMetric) {
 		leastBusinessesMetric(obj, function(suggestions, unsatisfiedToDos) {

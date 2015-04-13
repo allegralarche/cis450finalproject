@@ -1,8 +1,8 @@
 var dbConnection;
-var searchRadius;
+var SEARCH_RADIUS;
 
 exports.init = function(callback) {
-	searchRadius = 10; // 10 miles for now?
+	SEARCH_RADIUS = 10; // 10 miles for now?
 	var oracledb =  require('oracledb');
 	var dbConfig = require('./dbconfig.js');
 	
@@ -73,37 +73,19 @@ getAllBusinesses = function(i, items, json, lat, long, callback) {
 }
 module.exports.getAllBusinesses = getAllBusinesses;
 
-Number.prototype.toRad = function() {
-	return this * Math.PI / 180;
-}
-
-var latLongDistance = function(lat1, long1, lat2, long2, callback) {
-	var R = 6371; // km 
-	var x1 = lat2-lat1;
-	var dLat = x1.toRad();  
-	var x2 = lon2-lon1;
-	var dLon = x2.toRad();  
-	var a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
-	                Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * 
-	                Math.sin(dLon/2) * Math.sin(dLon/2);  
-	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-	var d = R * c; 
-	callback(d);
-}
-
 getBusinessesViaCategories = function(keyword, lat, long, callback) {
 	console.log(keyword);
-	var stmt =   "SELECT * FROM Business B "
+	var stmt = "SELECT DISTINCT * FROM Business B "
   	    + "INNER JOIN Offers O ON B.BUSINESS_ID = O.BUSINESS_ID "
   	    + "WHERE O.CATEGORY_NAME LIKE '%" + keyword + "%'";
-       // +        "AND SQRT((B.LATITUDE - " + lat + ") ^2 + "
-      //  + "(B.LONGITUDE - " + long + ")^2) < " +  radius,
     dbConnection.execute(stmt, function(err, result) {
   	    if (err) { 
   	    	console.error('SQL ERR: ' + err); 
 	        return; 
 	    }
 	    var rows = result.rows;
+	    console.log('NUM ROWS RETURNED: ' + rows.length);
+	    //rows = filterByDistance(rows, lat, long);
 	    //console.log('RESULT OF QUERY: ' + rows);
 	    var businesses = "";
         for (var i = 0; i < rows.length; i++) {
@@ -122,6 +104,39 @@ getBusinessesViaCategories = function(keyword, lat, long, callback) {
         callback(businesses);
     });
 };
+
+var filterByDistance = function(businesses, startLat, startLong) {
+	var filtered = [];
+	for (var i = 0; i < businesses.length; i++) {
+		var business = businesses[i];
+		var lat = business[3];
+		var long = business[4];
+		var dist = latLongDistance(lat, long, startLat, startLong);
+		//console.log('distance found: ' + dist);
+		if (dist <= SEARCH_RADIUS) {
+			filtered.push(business);
+		}
+	}
+	return filtered;
+}
+
+toRad = function(num) {
+	return num * Math.PI / 180;
+}
+
+var latLongDistance = function(lat1, lon1, lat2, lon2) {
+	console.log(lat1 + ", " + lon1 + ", " + lat2 + ", " + lon2);
+	var R = 6371; // km 
+	var x1 = lat2-lat1;
+	var dLat = toRad(x1); 
+	var x2 = lon2-lon1;
+	var dLon = toRad(x2); 
+	var a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
+	                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * 
+	                Math.sin(dLon/2) * Math.sin(dLon/2);  
+	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+	return R * c; 
+}
 
 
 exports.getBusinessesViaProducts = function(keyword, lat, long){

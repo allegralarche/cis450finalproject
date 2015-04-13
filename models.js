@@ -49,11 +49,11 @@ var itemToBusinesses = function(list, index, lat, long, callback) {
 	var item = list[index]; // the full, original todo item as entered
 	var keyword = itemToKeyword(item); // the keyword resulting from parsing the item, used for querying the db
 	var allBusinesses = '[';
-	getBusinessesViaCategories(keyword, lat, long, function(businessList1) {
-     	//getBusinessesViaProducts(word, startLatitude, startLongitude, function(businessList2) {
-     	allBusinesses = allBusinesses + businessList1 + '],';
-     	callback(item, allBusinesses, index);
-     	//});
+	getBusinessesFromDB(keyword, lat, long, false, function(businessList1) {
+     	getBusinessesFromDB(keyword, lat, long, true, function(businessList2) {
+     		allBusinesses = allBusinesses + businessList1 + businessList2 + '],';
+     		callback(item, allBusinesses, index);
+     	});
     });
 };
 
@@ -73,11 +73,19 @@ getAllBusinesses = function(i, items, json, lat, long, callback) {
 }
 module.exports.getAllBusinesses = getAllBusinesses;
 
-getBusinessesViaCategories = function(keyword, lat, long, callback) {
+getBusinessesFromDB = function(keyword, lat, long, useProductTable, callback) {
 	console.log(keyword);
-	var stmt = "SELECT DISTINCT * FROM Business B "
-  	    + "INNER JOIN Offers O ON B.BUSINESS_ID = O.BUSINESS_ID "
-  	    + "WHERE O.CATEGORY_NAME LIKE '%" + keyword + "%'";
+	var stmt;
+	if (useProductTable) {
+		stmt = "SELECT DISTINCT * FROM Business B "
+	  	    + "INNER JOIN Offers O ON B.BUSINESS_ID = O.BUSINESS_ID "
+	  	    + "INNER JOIN Product P ON P.category_name = O.category_name "
+	  	    + "WHERE P.NAME LIKE '%" + keyword + "%'";
+	} else {
+		stmt = "SELECT DISTINCT * FROM Business B "
+	  	    + "INNER JOIN Offers O ON B.BUSINESS_ID = O.BUSINESS_ID "
+	  	    + "WHERE O.CATEGORY_NAME LIKE '%" + keyword + "%'";
+	}
     dbConnection.execute(stmt, function(err, result) {
   	    if (err) { 
   	    	console.error('SQL ERR: ' + err); 
@@ -136,37 +144,4 @@ var latLongDistance = function(lat1, lon1, lat2, lon2) {
 	                Math.sin(dLon/2) * Math.sin(dLon/2);  
 	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
 	return R * c; 
-}
-
-
-exports.getBusinessesViaProducts = function(keyword, lat, long){
-    dbConnection.execute(
-  	      "SELECT *"
-  	    + "FROM product P "
-  	    + "INNER JOIN offers O ON O.CATEGORY_NAME = P.CATEGORY_NAME"
-  	    + "INNER JOIN business B ON B.BUSINESS_ID = O.BUSINESS_ID"
-  	    + "WHERE P.NAME LIKE %" + keyword + "% AND"
-            +        "SQRT((B.LATITUDE - " + lat + ") ^2 + "
-            + "(B.LONGITUDE - " + long + ")^2) < " +  radius,
-  	      function(err, result)
-  	      {
-  	        if (err) { 
-  	        	console.error(err); 
-  	        	return; 
-  	        	}
-  	        var rows = result.rows;
-  	        var result = "";
-  	        for (var i = 0; i < rows.length; i++){
-  	        	data = JSON.parse(rows[i]);
-	        	result += "{";
-	        	result += "\"name\":\"" 	+ data.NAME 	   + "\", ";
-	        	result += "\"bid\":\"" 		+ data.BUSINESS_ID + "\", ";
-	        	result += "\"address\":\"" 	+ data.ADDRESS 	   + "\", ";
-	        	result += "\"rating\":\"" 	+ data.RATING	   + "\", ";
-	        	result += "\"lat\":\"" 		+ data.LATITUDE    + "\", ";
-	        	result += "\"long\":\"" 	+ data.LONGITUDE   + "\", ";
-	        	result += "}";
-  	        }
-  	      });
-return result;
 }

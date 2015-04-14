@@ -13,11 +13,11 @@ exports.enterList = function(req, res) {
 exports.processList = function(req, res) {
 	var todolist = req.body.list;
 	var lat = req.body.latitude;
-	var long = req.body.longitude;
+	var lng = req.body.longitude;
 	var useMinimalMetric = req.body.useMinimalMetric;
 	
-	getBusinessesForList(todolist, lat, long, function(businessesStruct) {
-		bestBusinessesAlgorithm(businessesStruct, lat, long, true, 
+	getBusinessesForList(todolist, lat, lng, function(businessesStruct) {
+		bestBusinessesAlgorithm(businessesStruct, lat, lng, useMinimalMetric, 
 				function(idsToItems, idsToBusinesses, unsatisfiedItems) {
 			res.send({idsToItems:idsToItems, idsToBusinesses:idsToBusinesses, unsatisfiedItems:unsatisfiedItems});
 		});
@@ -26,16 +26,32 @@ exports.processList = function(req, res) {
 
 //Called as a POST request to show the user his/her results
 exports.displayResults = function(req, res) {
+
 	var recommendations = JSON.parse(req.body.idsToItems);
 	var idsToBusinesses = JSON.parse(req.body.idsToBusinesses);
 	var unsatisfiedToDos = JSON.parse(req.body.unsatisfiedItems);
-	console.log("IN DISPLAY RESULTS");
-	console.log(recommendations);
-	console.log(idsToBusinesses);
-	console.log(unsatisfiedToDos);
+	console.log('BusinessIDs to ItemLists: ' + recommendations);
+	console.log('BusinessIds to Businesses structs: ' + idsToBusinesses);
+	console.log('Unsatisfied to-do Items: ' + unsatisfiedToDos);
+
+	// populate tasklist object
+	// really just want one object which is a map from business names to array of items completed there
+	/*var taskList = [];
+	for(var id in recommendations) {
+		if(recommendations.hasOwnProperty(id)) {
+			taskList.push({
+				name: idsToBusinesses[id].name, 
+				tasks: recommendations.id
+			});
+		}
+	}
+	console.log('taskList in routes.js: ' + taskList);
 	
 	//Put info into format that can be easily displayed in show_results
-	//res.render('show_results', {});
+	res.render('show_results', {
+		taskList:JSON.stringify(taskList), 
+		unsatisfiedToDos:JSON.stringify(unsatisfiedToDos)
+	});*/
 }
 
 var getBusinessesForList = function(todoList, startLatitude, startLongitude, callback) {	

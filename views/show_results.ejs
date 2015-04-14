@@ -1,10 +1,46 @@
 <head>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
-    <link href='/styles/style.css' rel='stylesheet' type='text/css'>
+    <!--<link href='/styles/style.css' rel='stylesheet' type='text/css'>-->
+    <link href='style.css' rel='stylesheet' type='text/css'>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 </head>
 <html>
 <body>
-    
+	<div id='taskListHolder' hidden=true><%= taskList %></div>
+	<div id='unsatisfiedHolder' hidden=true><%= unsatisfiedToDos %></div>
+	
+    <div id="main-wrapper">
+        <h1>Here's the plan!</h1>
+        <% taskList.forEach(function(bus) { %>
+            <h3>Go to <span class="bus"><%=bus.name%></span> to complete:</h3>
+            <% bus.tasks.forEach(function(task) { %>
+                <p>- <%=task%></p>
+            <% }); %>
+        <%  }); %>
+        <h1>We couldn't help you with...</h1>
+        <% unsatisfiedToDos.forEach(function(t) { %>
+            <p>- <%=t%></p>
+        <% }); %> 
+        
+        
+
+        <!-- Just to test the layout: 
+        <h1>Here's the plan!</h1>
+        <h3>Go to <span class="bus">Al's</span> to complete:</h3>
+        <p>Blah</p>
+        <p>Something</p>
+        <p>alskdf</p>
+        <h3>Go to <span class="bus">Pete's</span> to complete:</h3>
+        <p>Something else</p>
+        <p>Si</p>
+        <h1>We couldn't help you with...</h1>
+        <p>This</p>
+        <p>And this nnnnnnnnnnnnnnnnnnnnnnnnnnnnn nnnnnnnnnnnnnnnnnnnnnnnnnnnn nnnnnnnnnnnnnnnnnnnnnnnnnnn nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn nnnnnnnnnnnnnnnnnnnnnnnnnnnnn</p>
+        <p>And this</p>-->
+    </div>
 </body>
 </html>
+
+<script>
+	console.log($('#taskListHolder').text());
+</script>

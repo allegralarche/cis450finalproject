@@ -13,11 +13,11 @@ exports.enterList = function(req, res) {
 exports.processList = function(req, res) {
 	var todolist = req.body.list;
 	var lat = req.body.latitude;
-	var long = req.body.longitude;
+	var lng = req.body.longitude;
 	var useMinimalMetric = req.body.useMinimalMetric;
 	
-	getBusinessesForList(todolist, lat, long, function(businessesStruct) {
-		bestBusinessesAlgorithm(businessesStruct, lat, long, useMinimalMetric, 
+	getBusinessesForList(todolist, lat, lng, function(businessesStruct) {
+		bestBusinessesAlgorithm(businessesStruct, lat, lng, useMinimalMetric, 
 				function(idsToItems, idsToBusinesses, unsatisfiedItems) {
 			res.send({idsToItems:idsToItems, idsToBusinesses:idsToBusinesses, unsatisfiedItems:unsatisfiedItems});
 		});
@@ -26,15 +26,29 @@ exports.processList = function(req, res) {
 
 //Called as a POST request to show the user his/her results
 exports.displayResults = function(req, res) {
+	// really just want one object which is a map from business names to array of items completed there
+	var taskList = [];
+
+	// return JSON objects from input strings -- are the inputs strings?
 	var recommendations = JSON.parse(req.body.idsToItems);
 	var idsToBusinesses = JSON.parse(req.body.idsToBusinesses);
 	var unsatisfiedToDos = JSON.parse(req.body.unsatisfiedItems);
-	console.log(recommendations);
-	console.log(idsToBusinesses);
-	console.log(unsatisfiedToDos);
+
+	// populate tasklist object
+	for(var id in recommendations) {
+		if(recommendations.hasOwnProperty(id)) {
+			taskList[taskList.length] = {
+				name: idsToBusinesses.id.name, 
+				tasks: recommendations.id
+			};
+		}
+	}
 	
 	//Put info into format that can be easily displayed in show_results
-	//res.render('show_results', {});
+	res.render('show_results', {
+		taskList:taskList, 
+		unsatisfiedToDos:unsatisfiedToDos
+	});
 }
 
 var getBusinessesForList = function(todoList, startLatitude, startLongitude, callback) {	

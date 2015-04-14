@@ -235,7 +235,55 @@ var shortestDistanceMetric = function(obj, startLatitude, startLongitude, callba
 	var idsToBusinesses = {};
 	//list of any to-do items not satisfied
 	var unsatisfiedToDos = [];
+	
+	
+	for (var item in obj) {
+		var business_list = obj[item];
+		var min_dist = 0.0;
+		var closest_bid = "";
+		var closest_index = -1;
+		var d_min = 10.0 //harcoded?? 
+		if (business_list.length == 0) { 
+			unsatisfiedToDos.push(item);
+			break; 
+		}
+		for (var  i = 0; i < business_list.length; i++) {
+			var lat = business_list[i].latitude;
+			var lon = business_list[i].longitude;
+			d = getDistanceFromLatLonInKm(startLatitude,startLongitude,lat,lon);
+			if (d < d_min) {
+				d_min = d;
+				closest_bid = business_list[i].bid
+				closest_index = i;
+			}
+		}
+		
+		if (!(closest_bid in suggestions)) {
+			suggestions[closest_bid] = [];
+		}
+		suggestions[closest_bid].push(item);
+		idsToBusinesses[closest_bid] = business_list[closest_index];
+								
+	}
+	
 	callback(suggestions, idsToBusinesses, unsatisfiedToDos);
 	
+}
+
+//distance helper functions
+function getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {
+  
+  var R = 6371; // Radius of the earth in km
+  var dLat = deg2rad(lat2-lat1);  // deg2rad below
+  var dLon = deg2rad(lon2-lon1); 
+  var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  var d = R * c; // Distance in km
+  //console.log(d);
+  return d;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI/180)
 }
 

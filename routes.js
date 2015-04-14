@@ -30,9 +30,9 @@ exports.displayResults = function(req, res) {
 	var recommendations = JSON.parse(req.body.idsToItems);
 	var idsToBusinesses = JSON.parse(req.body.idsToBusinesses);
 	var unsatisfiedToDos = JSON.parse(req.body.unsatisfiedItems);
-	console.log('BusinessIDs to ItemLists: ' + recommendations);
-	console.log('BusinessIds to Businesses structs: ' + idsToBusinesses);
-	console.log('Unsatisfied to-do Items: ' + unsatisfiedToDos);
+	console.log(recommendations);
+	console.log(idsToBusinesses);
+	console.log(unsatisfiedToDos);
 
 	// populate tasklist object
 	// really just want one object which is a map from business names to array of items completed there

@@ -46,16 +46,6 @@ var getBusinessesForList = function(todoList, startLatitude, startLongitude, cal
 	});
 };
 
-/*
- * Expected format of itemsToBusinesses:
- * var item_dict = '{"buy_shirt":' +  
-	'[ {"name":"Target", "bid":"hfsd7383fj9", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"},' +
-     '{"name":"Walmart", "bid": "hfg3653fj9", "address": "200 South Columbus", "rating":"4.0", "lat":"0.0", "long":"0.0"} ],' + 
-	'"get haircut":' +
-	'[ {"name":"Kidz Cutz", "bid":"hfsd7383fj9", "address":"4000 Pine Street", "rating":"3.5", "lat":"0.0", "long":"0.0"},' +
-     '{"name":"Bob Barber", "bid": "hfg3653fj9", "address": "200 South Columbus", "rating":"4.0", "lat":"0.0", "long":"0.0"} ] }';
- */
-
 //ALIZA AND JARED'S CODE
 var bestBusinessesAlgorithm = function(itemsToBusinesses, latitude, longitude, useMinimalMetric, callback) {
 

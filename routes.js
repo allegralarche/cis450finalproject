@@ -43,11 +43,14 @@ exports.displayResults = function(req, res) {
 			};
 		}
 	}
+
+	var taskListString = JSON.stringify(taskList);
+	var unsatisfiedToDosString = JSON.stringify(unsatisfiedToDos);
 	
 	//Put info into format that can be easily displayed in show_results
 	res.render('show_results', {
-		taskList:taskList, 
-		unsatisfiedToDos:unsatisfiedToDos
+		taskListString:taskListString, 
+		unsatisfiedToDosString:unsatisfiedToDosString
 	});
 }
 

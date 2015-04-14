@@ -17,7 +17,7 @@ exports.processList = function(req, res) {
 	var useMinimalMetric = req.body.useMinimalMetric;
 	
 	getBusinessesForList(todolist, lat, long, function(businessesStruct) {
-		bestBusinessesAlgorithm(businessesStruct, lat, long, true, 
+		bestBusinessesAlgorithm(businessesStruct, lat, long, useMinimalMetric, 
 				function(idsToItems, idsToBusinesses, unsatisfiedItems) {
 			res.send({idsToItems:idsToItems, idsToBusinesses:idsToBusinesses, unsatisfiedItems:unsatisfiedItems});
 		});

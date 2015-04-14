@@ -29,6 +29,7 @@ exports.displayResults = function(req, res) {
 	var recommendations = JSON.parse(req.body.idsToItems);
 	var idsToBusinesses = JSON.parse(req.body.idsToBusinesses);
 	var unsatisfiedToDos = JSON.parse(req.body.unsatisfiedItems);
+	console.log("IN DISPLAY RESULTS");
 	console.log(recommendations);
 	console.log(idsToBusinesses);
 	console.log(unsatisfiedToDos);
@@ -51,7 +52,7 @@ var bestBusinessesAlgorithm = function(itemsToBusinesses, latitude, longitude, u
 
 	var obj = JSON.parse(itemsToBusinesses);
 	//var obj = itemsToBusinesses;
-	
+	console.log('useMinimalMetric in bestBusinessAlg: ---' + useMinimalMetric + '---');
 	if (useMinimalMetric) {
 		leastBusinessesMetric(obj, function(suggestions, unsatisfiedToDos) {
 			//finalMapping is of type bid --> [item], idsToBusinesses is of type bid --> business_object
@@ -133,6 +134,7 @@ var breakTies = function(suggestions, originalObj, unsatisfiedItems, callback) {
 }
 
 var leastBusinessesMetric = function(obj, callback) {
+	console.log('IN LEAST BUSINESSES');
 	//Reverse dict from businesses to to-do item
 	var businessesToItems = {};
 	//Dict from business to number of to-do items covered
@@ -218,7 +220,7 @@ var leastBusinessesMetric = function(obj, callback) {
 
 //JARED'S CODE
 var shortestDistanceMetric = function(obj, startLatitude, startLongitude, callback) {
-	
+	console.log("IN SHORTEST DISTANCE");
 	//map of type bid --> [todo items]
 	var suggestions = {};
 	//map of type bid --> business_obj

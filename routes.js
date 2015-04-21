@@ -78,15 +78,14 @@ var bestBusinessesAlgorithm = function(itemsToBusinesses, latitude, longitude, u
 
 	var obj = JSON.parse(itemsToBusinesses);
 	//var obj = itemsToBusinesses;
-	
-	if (useMinimalMetric) {
+	if (useMinimalMetric == "true") {
 		leastBusinessesMetric(obj, function(suggestions, unsatisfiedToDos) {
 			//finalMapping is of type bid --> [item], idsToBusinesses is of type bid --> business_object
 			breakTies(suggestions, obj, unsatisfiedToDos, function(finalMapping, idsToBusinesses) {
 				callback(finalMapping, idsToBusinesses, unsatisfiedToDos);
 			});
 		});
-	} else {
+	} else if (useMinimalMetric == "false") {
 		shortestDistanceMetric(obj, latitude, longitude, function(finalMapping, idsToBusinesses, unsatisfiedToDos) {
 			callback(finalMapping, idsToBusinesses, unsatisfiedToDos);
 		});
@@ -252,6 +251,8 @@ var shortestDistanceMetric = function(obj, startLatitude, startLongitude, callba
 	var idsToBusinesses = {};
 	//list of any to-do items not satisfied
 	var unsatisfiedToDos = [];
+	//list of the ids of suggested businesses
+	var suggestedBusinesses = [];
 	
 	
 	for (var item in obj) {
@@ -259,14 +260,14 @@ var shortestDistanceMetric = function(obj, startLatitude, startLongitude, callba
 		var min_dist = 0.0;
 		var closest_bid = "";
 		var closest_index = -1;
-		var d_min = 10.0 //harcoded?? 
+		var d_min = 25.0 //harcoded?? 
 		if (business_list.length == 0) { 
 			unsatisfiedToDos.push(item);
 			break; 
 		}
 		for (var  i = 0; i < business_list.length; i++) {
-			var lat = business_list[i].latitude;
-			var lon = business_list[i].longitude;
+			var lat = business_list[i].lat;
+			var lon = business_list[i].long;
 			d = getDistanceFromLatLonInKm(startLatitude,startLongitude,lat,lon);
 			if (d < d_min) {
 				d_min = d;
@@ -275,12 +276,23 @@ var shortestDistanceMetric = function(obj, startLatitude, startLongitude, callba
 			}
 		}
 		
+		
 		if (!(closest_bid in suggestions)) {
 			suggestions[closest_bid] = [];
 		}
 		suggestions[closest_bid].push(item);
 		idsToBusinesses[closest_bid] = business_list[closest_index];
+		
+		if (!(closest_bid in suggestedBusinesses)) {
+			suggestedBusinesses.push(closest_bid);
+		}
+		
+		
 								
+	}
+	
+	for (var i = 0; i < suggestedBusinesses.length; i++) {
+		console.log(suggestedBusinesses[i]);
 	}
 	
 	callback(suggestions, idsToBusinesses, unsatisfiedToDos);

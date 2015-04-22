@@ -65,9 +65,10 @@
 	    	  //console.log(idsToItems);
 			  //console.log(idsToBusinesses);
 			  //console.log(unsatisfiedItems);
-	    	  $.post('/displayResults', 
-	    	  	 {idsToItems:JSON.stringify(idsToItems), idsToBusinesses:JSON.stringify(idsToBusinesses), unsatisfiedItems:JSON.stringify(unsatisfiedItems)}, 
-	    	  	 function(status) {
+			  var url = '/displayResults/' + JSON.stringify(idsToItems) + '/' + JSON.stringify(idsToBusinesses)
+			  	+ '/' + JSON.stringify(unsatisfiedItems);
+	    	  $.get(url, function(data, status) {
+	    	  	 
 	    	  });
         });
 	});

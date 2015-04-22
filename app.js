@@ -20,7 +20,7 @@ modelFile.init(function() {
 		app.get('/', routeFile.enterList);
 		app.get('/home', routeFile.enterList);
 		app.post('/processList', routeFile.processList);
-	    app.post('/displayResults', routeFile.displayResults);
+	    app.get('/displayResults/:idsToItems/:idsToBusinesses/:unsatisfied', routeFile.displayResults);
 		
 		http.createServer(app).listen(app.get('port'), function() {
 				 console.log( 'Open browser to http://localhost:' + app.get( 'port' ));

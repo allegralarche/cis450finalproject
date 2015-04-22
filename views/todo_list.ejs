@@ -6,6 +6,7 @@
     <!--<link href='style.css' rel='stylesheet' type='text/css'>-->
 </head>
 <body>
+    <button id='logoutBtn'>Log Out</button>
     <div id='main-wrapper'>
         <h1>Where are you?</h1>
         <form id='addressForm'>
@@ -67,9 +68,7 @@
 			  //console.log(unsatisfiedItems);
 			  var url = '/displayResults/' + JSON.stringify(idsToItems) + '/' + JSON.stringify(idsToBusinesses)
 			  	+ '/' + JSON.stringify(unsatisfiedItems);
-	    	  $.get(url, function(data, status) {
-	    	  		window.location.replace(url);
-	    	  });
+	    	  window.location.replace(url);
         });
 	});
 
@@ -86,5 +85,13 @@
         };
 
         autocomplete = new google.maps.places.Autocomplete(input, options);
+        
+        
+		$('#logoutBtn').click(function() {
+			console.log('logout button clicked');
+			$.post("/logout", function(res) {
+		 		window.location.replace("/login");
+		 	});
+		});
     });
 </script>

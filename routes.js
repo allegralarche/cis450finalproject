@@ -1,12 +1,65 @@
 var models;
+var sha1;
 
 exports.init = function(callback) {
 	models = require('./models.js');
+	sha1 = require('node-sha1');
 	callback();
 };
 
+exports.login = function(req, res) {
+	res.render('login');
+};
+
+exports.validate = function(req, res) {
+	var username = req.body.username;
+	var hashed_pw = sha1(req.body.password);
+	models.validateUser(username, hashed_pw, function(result) {
+		if (result == 'valid') {
+			req.session.loggedin = true;
+			res.send("validated");
+		} else {
+			res.send("failed");
+		}
+	})
+};
+
+exports.signup = function(req, res) {
+	res.render('signup');
+};
+
+exports.logout = function(req, res) {
+	console.log("in logout route");
+	req.session.destroy;
+	res.send('done');
+}
+
+exports.createAccount = function(req, res) {
+	var firstname = req.body.firstname;
+	var lastname = req.body.lastname;
+	var username = req.body.username;
+	var password = req.body.password;
+	if (!firstname || !lastname || !username || !password) {
+		res.send("Error: Missing field");
+	} else {
+		var hashed_pw = sha1(password);
+		models.createUser(firstname, lastname, username, hashed_pw, function(result) {
+			if (result == "username exists") {
+				res.send("Error: Email exists");
+			} else {
+				req.session.loggedin = true;
+				res.send("success");
+			}
+		});
+	}
+}
+
 exports.enterList = function(req, res) {
-	res.render('todo_list');
+	if (req.session.loggedin) {
+		res.render('todo_list')
+	} else {
+		res.redirect("/login");
+	}
 };
 
 //This route should be called (as a GET request) when the todo list is submitted

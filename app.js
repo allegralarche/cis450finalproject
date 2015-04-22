@@ -3,6 +3,9 @@ var http = require('http');
 var path = require('path');
 var app = express();
 var engine = require('ejs-locals');
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
+
 var bodyParser = require('body-parser');
 var routeFile = require('./routes.js');
 var modelFile = require('./models.js');
@@ -14,11 +17,19 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true }));
 app.use(bodyParser.json());
 app.use("/styles",express.static(__dirname + "/styles"));
+app.use(cookieParser());
+app.use(session({secret: 'cis450'}));
+
 
 modelFile.init(function() {
 	routeFile.init(function() {
-		app.get('/', routeFile.enterList);
-		app.get('/home', routeFile.enterList);
+		app.get('/', routeFile.login);
+		app.get('/login', routeFile.login);
+		app.post('/validate', routeFile.validate);
+		app.get('/signup', routeFile.signup);
+		app.post('/createAccount', routeFile.createAccount);
+		app.post('/logout', routeFile.logout);
+		app.get('/enterList', routeFile.enterList);
 		app.post('/processList', routeFile.processList);
 	    app.get('/displayResults/:idsToItems/:idsToBusinesses/:unsatisfied', routeFile.displayResults);
 		

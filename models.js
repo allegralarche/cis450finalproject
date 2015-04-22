@@ -19,6 +19,48 @@ exports.init = function(callback) {
 	callback();
 }
 
+exports.createUser = function(firstname, lastname, username, hashed_pw, callback) {
+	var stmt = "SELECT * FROM users WHERE username = '" + username + "'";
+	dbConnection.execute(stmt, function(err, result) {
+		if (err) { 
+  	    	console.error('SQL ERR: ' + err); 
+	        return; 
+	    }
+	    var rows = result.rows;
+	    if (rows.length > 0) {
+	    	callback("username exists");
+	    } else {
+	    	stmt = "INSERT INTO users (firstname, lastname, username, hashed_pw) "
+	    		+ "VALUES ('" + firstname + "','" + lastname + "','" + username + "','" + hashed_pw + "')";
+	    	console.log(stmt);
+	    	dbConnection.execute(stmt, {}, { "isAutoCommit": true}, function(err, result) {
+	    		if (err) { 
+	      	    	console.error('SQL ERR: ' + err); 
+	    	        return; 
+	    	    }
+	    		console.log("Rows inserted: " + result.rowsAffected);
+	    		callback("created");
+	    	});
+	    }
+	});
+}
+
+exports.validateUser = function(username, hashed_pw, callback) {
+	var stmt = "SELECT * FROM users WHERE username = '" + username + "' AND hashed_pw = '" + hashed_pw + "'";
+	dbConnection.execute(stmt, function(err, result) {
+  	    if (err) { 
+  	    	console.error('SQL ERR: ' + err); 
+	        return; 
+	    }
+	    var rows = result.rows;
+	    if (rows.length > 0) {
+	    	callback("valid");
+	    } else {
+	    	callback("invalid");
+	    }
+	});
+};
+
 //Turn a user's todo item into a keyword to use to query the database
 var itemToKeyword = function(item, callback) {
 	if (item.indexOf('buy ') == 0 || item.indexOf('Buy ') == 0) {

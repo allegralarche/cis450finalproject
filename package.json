@@ -15,10 +15,12 @@
   "private": true,
   "dependencies": {
     "body-parser": "*",
+    "cookie-parser": "*",
     "ejs": "*",
     "ejs-locals": "*",
     "express": "4.x",
     "express-session": "*",
+    "node-sha1": "0.0.1",
     "lru-cache": "2.5.x"
   },
   "author": "",

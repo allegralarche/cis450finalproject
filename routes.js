@@ -52,8 +52,8 @@ exports.displayResults = function(req, res) {
 	//Put info into format that can be easily displayed in show_results
 	console.log('before res.render');
 	res.render('show_results', {
-		taskList: taskListString, 
-		unsatisfiedToDos: unsatisfiedToDosString
+		taskList: taskList, 
+		unsatisfiedToDos: unsatisfiedToDos
 	});
 }
 

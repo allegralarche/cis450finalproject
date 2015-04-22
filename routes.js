@@ -41,8 +41,6 @@ exports.displayResults = function(req, res) {
 	var taskList = [];
 	for(var id in recommendations) {
 
-		console.log(idsToBusinesses[id].name);
-		console.log(recommendations[id]);
 		taskList.push({
 			name: idsToBusinesses[id].name, 
 			tasks: recommendations[id]

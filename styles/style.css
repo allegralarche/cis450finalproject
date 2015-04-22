@@ -13,6 +13,11 @@ h1 {
     color: #990000;
     margin: 25px 0px 0px 0px;
 }
+h3 {
+    font-size: 20px;
+    font-weight: lighter;
+    color: #990000;
+}
 button {
     text-decoration: none;
     color: white;
@@ -38,4 +43,15 @@ button {
 .minTags {
     display: inline-block;
     color: #990000;
+}
+
+.bus {
+    color: #2EB8B8;
+    font-weight: bold;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+    display: none;
 }

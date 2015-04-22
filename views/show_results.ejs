@@ -14,28 +14,13 @@
                 <p>- <%=task%></p>
             <% }); %>
         <%  }); %>
-        <h1>We couldn't help you with...</h1>
-        <% unsatisfiedToDos.forEach(function(t) { %>
-            <p>- <%=t%></p>
-        <% }); %> 
+        <% if(unsatisfiedToDos.length > 0) { %>
+            <h1>We couldn't help you with...</h1>
+            <% unsatisfiedToDos.forEach(function(t) { %>
+                <p>- <%=t%></p>
+            <% }); %>
+        <% } %>
+         
         
-        
-
-        <!--
-        <h1>Here's the plan!</h1>
-        <h3>Go to <span class="bus">Al's</span> to complete:</h3>
-        <p>Blah</p>
-        <p>Something</p>
-        <p>alskdf</p>
-        <h3>Go to <span class="bus">Pete's</span> to complete:</h3>
-        <p>Something else</p>
-        <p>Si</p>
-        <h1>We couldn't help you with...</h1>
-        <p>This</p>
-        <p>And this nnnnnnnnnnnnnnnnnnnnnnnnnnnnn</p>
-        <p>And this</p>-->
     </div>
 </body>
-<script>
-	console.log('IN SHOW RESULTS');
-</script>

@@ -2,18 +2,20 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <link href='/styles/style.css' rel='stylesheet' type='text/css'>
-    <!--<link href='style.css' rel='stylesheet' type='text/css'>-->
+    <!--<link href='/styles/style.css' rel='stylesheet' type='text/css'>-->
+    <link href='style.css' rel='stylesheet' type='text/css'>
 </head>
 <body>
     <div id='main-wrapper'>
         <h1>Where are you?</h1>
         <form id='addressForm'>
             <input type="text" id="address" placeholder='Enter your current address'>
+            <span id="placeError" class="error">* You must enter a valid location</span>
         </form>
         <h1>What do you have to get done?</h1>
         <form id='taskForm'>
-            <input type="text" class="task"></br>
+            <input type="text" class="task">
+            <span id="taskError" class="error">* Please enter at least one task</span></br>
             <input type="text" class="task"></br>
             <input type="text" class="task"></br>
         </form>
@@ -38,6 +40,9 @@
 
 	$('#submitBtn').click(function() {
 
+        var err = false;
+        $(".error").hide();
+
         // get all the data in the task inputs and make a list out of them
         $('.task').each(function() {
             var task = $(this).val().trim();
@@ -46,32 +51,42 @@
             }
         });
 
+        if(todoList.length == 0) {
+            $("#taskError").show();
+            err = true;
+
+        }
+
         // get the latitude and longitude of the address the user entered
         var place = autocomplete.getPlace();
-        lat = place.geometry.location.lat();
-        console.log("lat: " + lat);
-        lng = place.geometry.location.lng();
-        console.log("lng: " + lng);
+        if(place !== undefined) {
+            lat = place.geometry.location.lat();
+            console.log("lat: " + lat);
+            lng = place.geometry.location.lng();
+            console.log("lng: " + lng);
+        }
+        else {
+            $("#placeError").show();
+            err = true;
+        }
 
         useMinimalMetric = document.getElementById('min').checked;
         console.log(useMinimalMetric);
 
-        // pass this list into the post request
-	 	$.post('/processList', {list:todoList, latitude:lat, longitude:lng, useMinimalMetric:useMinimalMetric}, 
-	 		function(responseObj) {
-	    	  var idsToItems = responseObj.idsToItems;
-	    	  var idsToBusinesses = responseObj.idsToBusinesses;
-	    	  var unsatisfiedItems = responseObj.unsatisfiedItems;
-	    	  //console.log(idsToItems);
-			  //console.log(idsToBusinesses);
-			  //console.log(unsatisfiedItems);
+        // only post if there aren't any errors
+        if(!err){
+            // pass this list into the post request
+    	 	$.post('/processList', {list:todoList, latitude:lat, longitude:lng, useMinimalMetric:useMinimalMetric}, 
+    	 		function(responseObj) {
+    	    	  var idsToItems = responseObj.idsToItems;
+    	    	  var idsToBusinesses = responseObj.idsToBusinesses;
+    	    	  var unsatisfiedItems = responseObj.unsatisfiedItems;
 
-			  var url = '/displayResults/' + JSON.stringify(idsToItems) + '/' + JSON.stringify(idsToBusinesses)
-			  	+ '/' + JSON.stringify(unsatisfiedItems);
-	    	  $.get(url, function(data, status) {
-	    	  		window.location.replace(url);
-	    	  });
-        });
+    			  var url = '/displayResults/' + JSON.stringify(idsToItems) + '/' + JSON.stringify(idsToBusinesses)
+    			  	+ '/' + JSON.stringify(unsatisfiedItems);
+    	    	  window.location.replace(url);
+            });
+         }
 	});
 
 

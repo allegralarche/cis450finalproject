@@ -4,17 +4,8 @@
     <link href='style.css' rel='stylesheet' type='text/css'>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 </head>
-<script>
-
-var taskList;
-var unsatisfiedToDos;
-$(document).ready(function() {
-    taskList = JSON.parse(taskListString);
-    unsatisfiedToDos = JSON.parse(unsatisfiedToDos);
-});
-</script>
-<html>
 <body>
+	
     <div id="main-wrapper">
         <h1>Here's the plan!</h1>
         <% taskList.forEach(function(bus) { %>
@@ -27,6 +18,8 @@ $(document).ready(function() {
         <% unsatisfiedToDos.forEach(function(t) { %>
             <p>- <%=t%></p>
         <% }); %> 
+        
+        
 
         <!--
         <h1>Here's the plan!</h1>
@@ -39,9 +32,10 @@ $(document).ready(function() {
         <p>Si</p>
         <h1>We couldn't help you with...</h1>
         <p>This</p>
-        <p>And this nnnnnnnnnnnnnnnnnnnnnnnnnnnnn nnnnnnnnnnnnnnnnnnnnnnnnnnnn nnnnnnnnnnnnnnnnnnnnnnnnnnn nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn nnnnnnnnnnnnnnnnnnnnnnnnnnnnn</p>
+        <p>And this nnnnnnnnnnnnnnnnnnnnnnnnnnnnn</p>
         <p>And this</p>-->
     </div>
 </body>
-</html>
-
+<script>
+	console.log('IN SHOW RESULTS');
+</script>

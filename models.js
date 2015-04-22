@@ -2,7 +2,7 @@ var dbConnection;
 var SEARCH_RADIUS;
 
 exports.init = function(callback) {
-	SEARCH_RADIUS = 10; // kilometers
+	SEARCH_RADIUS = 20; // kilometers
 	var oracledb =  require('oracledb');
 	var dbConfig = require('./dbconfig.js');
 	

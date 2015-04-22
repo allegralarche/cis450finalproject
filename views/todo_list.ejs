@@ -66,9 +66,8 @@
 			  //console.log(idsToBusinesses);
 			  //console.log(unsatisfiedItems);
 	    	  $.post('/displayResults', 
-	    	  	 {idsToItems:JSON.stringify(idsToItems), idsToBusinesses:JSON.stringify(idsToBusinesses), unsatisfiedItems:JSON.stringify(unsatisfiedItems)}, 
-	    	  	 function(status) {
-	    	  });
+	    	  	 {idsToItems:idsToItems, idsToBusinesses:idsToBusinesses, unsatisfiedItems:unsatisfiedItems} 
+	    	  	);
         });
 	});
 

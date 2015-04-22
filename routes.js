@@ -29,7 +29,6 @@ exports.displayResults = function(req, res) {
 	// really just want one object which is a map from business names to array of items completed there
 	var taskList = [];
 
-	// return JSON objects from input strings -- are the inputs strings?
 	var recommendations = JSON.parse(req.body.idsToItems);
 	var idsToBusinesses = JSON.parse(req.body.idsToBusinesses);
 	var unsatisfiedToDos = JSON.parse(req.body.unsatisfiedItems);
@@ -37,10 +36,10 @@ exports.displayResults = function(req, res) {
 	// populate tasklist object
 	for(var id in recommendations) {
 		if(recommendations.hasOwnProperty(id)) {
-			taskList[taskList.length] = {
-				name: idsToBusinesses.id.name, 
-				tasks: recommendations.id
-			};
+			taskList.push({
+				name: idsToBusinesses[id].name, 
+				tasks: recommendations[id]
+			});
 		}
 	}
 

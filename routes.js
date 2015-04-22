@@ -79,6 +79,9 @@ exports.processList = function(req, res) {
 
 //Called as a GET request to show the user his/her results
 exports.displayResults = function(req, res) {
+
+
+
 	var recommendations = JSON.parse(req.params.idsToItems);
 	var idsToBusinesses = JSON.parse(req.params.idsToBusinesses);
 	var unsatisfiedToDos = JSON.parse(req.params.unsatisfied);
@@ -90,8 +93,7 @@ exports.displayResults = function(req, res) {
 	// really just want one object which is a map from business names to array of items completed there
 	var taskList = [];
 	for(var id in recommendations) {
-		console.log(idsToBusinesses[id].name);
-		console.log(recommendations[id]);
+
 		taskList.push({
 			name: idsToBusinesses[id].name, 
 			tasks: recommendations[id]

@@ -69,7 +69,7 @@
 			  var url = '/displayResults/' + JSON.stringify(idsToItems) + '/' + JSON.stringify(idsToBusinesses)
 			  	+ '/' + JSON.stringify(unsatisfiedItems);
 	    	  $.get(url, function(data, status) {
-	    	  	 
+	    	  		window.location.replace(url);
 	    	  });
         });
 	});

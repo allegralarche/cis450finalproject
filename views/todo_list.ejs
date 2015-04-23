@@ -84,7 +84,7 @@
     	    	  var unsatisfiedItems = responseObj.unsatisfiedItems;
 
     			  var url = '/displayResults/' + JSON.stringify(idsToItems) + '/' + JSON.stringify(idsToBusinesses)
-    			  	+ '/' + JSON.stringify(unsatisfiedItems);
+    			  	+ '/' + JSON.stringify(unsatisfiedItems) + '/' + lat + '/' + lng;
     	    	  window.location.replace(url);
             });
          }

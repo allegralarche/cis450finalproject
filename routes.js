@@ -85,9 +85,12 @@ exports.displayResults = function(req, res) {
 	var recommendations = JSON.parse(req.params.idsToItems);
 	var idsToBusinesses = JSON.parse(req.params.idsToBusinesses);
 	var unsatisfiedToDos = JSON.parse(req.params.unsatisfied);
+	var lat = req.params.lat;
+	var lng = req.params.lng;
 	console.log(recommendations);
 	console.log(idsToBusinesses);
 	console.log(unsatisfiedToDos);
+	console.log("Starting loc: " + lat +", " + lng);
 
 	// populate tasklist object
 	// really just want one object which is a map from business names to array of items completed there
@@ -95,20 +98,24 @@ exports.displayResults = function(req, res) {
 	for(var id in recommendations) {
 
 		taskList.push({
-			name: idsToBusinesses[id].name, 
+			name: idsToBusinesses[id].name,
+			address: idsToBusinesses[id].address,
 			tasks: recommendations[id]
 		});
 	}
-	console.log('taskList: ' + taskList);
-	
+		
 	var taskListString = JSON.stringify(taskList);
 	var unsatisfiedToDosString = JSON.stringify(unsatisfiedToDos);
 	
+	console.log('taskList: ' + taskListString);
+	console.log('unsatisfiedToDos: ' + unsatisfiedToDosString);
+	
 	//Put info into format that can be easily displayed in show_results
-	console.log('before res.render');
 	res.render('show_results', {
-		taskList: taskList, 
-		unsatisfiedToDos: unsatisfiedToDos
+		taskList: taskListString, 
+		unsatisfiedToDos: unsatisfiedToDosString,
+		lat: lat,
+		lng: lng
 	});
 }
 

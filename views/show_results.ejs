@@ -3,18 +3,87 @@
     <link href='/styles/style.css' rel='stylesheet' type='text/css'>
     <!--<link href='style.css' rel='stylesheet' type='text/css'>-->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+	<script>
+		var directionsDisplay;
+		var directionsService = new google.maps.DirectionsService();
+		var map;
+		var startLat;
+		var startLng;
+		var businesses;
+		
+		function initialize() {
+	  		
+			directionsDisplay = new google.maps.DirectionsRenderer();
+	  	  	startLat = <%-lat%>;
+			startLng = <%-lng%>;
+			
+			businesses = <%-taskList%>;
+			var startLoc = new google.maps.LatLng(startLat, startLng);
+	  	  	var mapOptions = {
+	    		zoom: 10,
+	    		center: startLoc
+	  	  	}
+	  	 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+	  	  	directionsDisplay.setMap(map);
+			calcRoute();
+		}
+		
+		function calcRoute() {
+		  
+		  var start = startLat + ',' + startLng;
+		  var end = startLat + ',' + startLng;
+		  var waypts = [];
+		  
+		  for (var i = 0; i < businesses.length; i++) {
+		    waypts.push({
+				location:businesses[i].address,
+		        stopover:true});
+		  }
+		   
+		  var request = {
+		        origin: start,
+		        destination: end,
+		        waypoints: waypts,
+		        optimizeWaypoints: true,
+		        travelMode: google.maps.TravelMode.DRIVING
+		  };
+		  
+		  directionsService.route(request, function(response, status) {
+		      if (status == google.maps.DirectionsStatus.OK) {
+		        directionsDisplay.setDirections(response);
+								
+		        var route = response.routes[0];
+		        var summaryPanel = document.getElementById('directions_panel');
+		        summaryPanel.innerHTML = '';
+		        // For each route, display summary information.
+		        for (var i = 0; i < route.legs.length; i++) {
+		          var routeSegment = i + 1;
+		          summaryPanel.innerHTML += '<b>Route Segment: ' + routeSegment + '</b><br>';
+		          summaryPanel.innerHTML += route.legs[i].start_address + ' to ';
+		          summaryPanel.innerHTML += route.legs[i].end_address + '<br>';
+		          summaryPanel.innerHTML += route.legs[i].distance.text + '<br><br>';
+		        }
+		      }
+		  }); 
+		   
+		}
+		
+		google.maps.event.addDomListener(window, 'load', initialize);
+		
+	</script>
 </head>
 <body>
 	<button id='logout'>Log Out</button>
     <div id="main-wrapper">
         <h1>Here's the plan!</h1>
-        <% taskList.forEach(function(bus) { %>
+        <% JSON.parse(taskList).forEach(function(bus) { %>
             <h3>Go to <span class="bus"><%=bus.name%></span> to complete:</h3>
             <% bus.tasks.forEach(function(task) { %>
                 <p>- <%=task%></p>
             <% }); %>
         <%  }); %>
-        <% if(unsatisfiedToDos.length > 0) { %>
+        <% if(JSON.parse(unsatisfiedToDos).length > 0) { %>
             <h1>We couldn't help you with...</h1>
             <% unsatisfiedToDos.forEach(function(t) { %>
                 <p>- <%=t%></p>
@@ -23,6 +92,13 @@
          
         
     </div>
+	
+	<div id="map-canvas" style="width:70%;height:70%;"></div>
+	<div id="directions_panel">
+	    
+	</div>
+	
+	
 </body>
 <script>
 	$('#logout').click(function() {

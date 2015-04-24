@@ -100,6 +100,8 @@ exports.displayResults = function(req, res) {
 		taskList.push({
 			name: idsToBusinesses[id].name,
 			address: idsToBusinesses[id].address,
+			lat: idsToBusinesses[id].lat,
+			lng: idsToBusinesses[id].long,
 			tasks: recommendations[id]
 		});
 	}

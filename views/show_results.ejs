@@ -51,7 +51,7 @@
 		  		  		  
 		  for (var i = 0; i < businesses.length; i++) {
 		    waypts.push({
-				location:businesses[i].address,
+				location:businesses[i].lat + ',' + businesses[i].lng,
 		        stopover:true});
 						
 			markers.push({
@@ -78,16 +78,17 @@
 				var route = response.routes[0];
 		        // For each waypoint, add correesponding marker
 		        for (var i = 0; i < route.legs.length; i++) {
-		          var routeSegment = i + 1;
-				  var waypt_lat = Math.round(route.legs[i].end_location.lat()*100)/100;
-				  var waypt_lng = Math.round(route.legs[i].end_location.lng()*100)/100;
+		          
+				  var waypt_lat = route.legs[i].end_location.lat();
+				  var waypt_lng = route.legs[i].end_location.lng();
 				  for (var marker_info in markers) {
-					  marker_lat = Math.round(markers[marker_info].lat*100)/100;
-					  marker_lng = Math.round(markers[marker_info].lng*100)/100;
+					  
+					  marker_lat = markers[marker_info].lat;
+					  marker_lng = markers[marker_info].lng;
 					  
 					  
 					  					  
-					  if (marker_lat == waypt_lat && marker_lng == waypt_lng) {
+					  if (sameCoords(marker_lat, marker_lng, waypt_lat, waypt_lng)) {
 						
 						var letter = String.fromCharCode("B".charCodeAt(0) + i);
 						var loc = new google.maps.LatLng(markers[marker_info].lat, markers[marker_info].lng);
@@ -107,6 +108,15 @@
 		      }
 		  }); 
 		   
+		}
+		
+		function sameCoords(lat1, lng1, lat2, lng2) {
+			
+			dLat = Math.abs(lat1-lat2);
+			dLng = Math.abs(lng1-lng2);
+			return (dLat < 0.00025 && dLng < 0.00025);
+			
+			
 		}
 					
 		google.maps.event.addDomListener(window, 'load', initialize);

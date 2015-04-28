@@ -15,7 +15,7 @@ body {
 #results-wrapper {
     width: 520px;
     min-height: 400px;
-    background-color: #E6E6E6;
+    background-color: rgba(255, 255, 204, .7);
     padding: 0px 15px 0px 15px;
     font-family: 'Open Sans', sans-serif;
     border-radius: 4px;
@@ -25,12 +25,12 @@ body {
 
 #directions-wrapper {
     min-height: 400px;
-    background-color: #E6E6E6;
+    background-color: rgba(255, 255, 204, .7);
     padding: 10px 15px 10px 15px;
     font-family: 'Open Sans', sans-serif;
     border-radius: 4px;
     margin-left:600px;
-    margin-top:55px;
+    margin-top:30px;
     margin-right:15px
 }
 h1 {

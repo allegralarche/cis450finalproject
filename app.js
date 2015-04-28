@@ -10,13 +10,13 @@ var bodyParser = require('body-parser');
 var routeFile = require('./routes.js');
 var modelFile = require('./models.js');
 
+app.use("/styles",express.static(__dirname + "/styles"));
 app.set('port', process.env.PORT || 8080);
 app.engine('ejs', engine);
 app.set('views', path.join( __dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true }));
 app.use(bodyParser.json());
-app.use("/styles",express.static(__dirname + "/styles"));
 app.use(cookieParser());
 app.use(session({secret: 'cis450'}));
 

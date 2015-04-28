@@ -88,7 +88,7 @@
 				var order = route.waypoint_order;
 				
 				for (var i = 0; i < order.length; i++) {
-					var index = order.indexOf(i);
+					var index = order[i];
 					//console.log(index);
   				  	marker_lat = markers[index].lat;
   				  	marker_lng = markers[index].lng;
@@ -118,6 +118,7 @@
 		<span class="logo"></span><h2>Listly</h2>
 		<button id='logout'>Log Out</button>
 	</div>
+	<button id="back" style="margin-top:5; margin-left:5">&#8592; Back to List</button>
 	<div>
 	    <div id="results-wrapper">
 	        <h1>Here's where you should go!</h1>
@@ -154,5 +155,9 @@
 		$.post("/logout", function(res) {
 	 		window.location.replace("/login");
 	 	});
+	});
+	
+	$('#back').click(function() {
+	 	window.location.replace("/enterList");
 	});
 </script>

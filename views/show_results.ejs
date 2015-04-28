@@ -1,118 +1,119 @@
 
 <head>
-	<title>Taskfly-Results</title>
+	<title>Listly-Results</title>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'>
-    <link href='../styles/style.css' rel='stylesheet' type='text/css'>
     <link rel="shortcut icon" href="../styles/favicon.ico" type="image/x-icon">
 	<link rel="icon" href="../styles/favicon.ico" type="image/x-icon">
-
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
-	<script>
-		var directionsDisplay;
-		var directionsService = new google.maps.DirectionsService();
-		var map;
-		var startLat;
-		var startLng;
-		var businesses;
-		var markers;
-				
-		function initialize() {
-	  		
-			directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers: true});
-	  	  	startLat = <%-lat%>;
-			startLng = <%-lng%>;
-			
-			businesses = <%-taskList%>;
-			var startLoc = new google.maps.LatLng(startLat, startLng);
-	  	  	var mapOptions = {
-	    		zoom: 10,
-	    		center: startLoc
-	  	  	}
-	  	 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-	  	  	directionsDisplay.setMap(map);
-			directionsDisplay.setPanel(document.getElementById("directions_panel"));
-			
-			
-  		    var marker = new google.maps.Marker({
-  		    	position: startLoc, 
-  		    	map: map, 
-  		    	title:"Starting Location",
-  				icon:"http://www.googlemapsmarkers.com/v1/A/FF0000/"
-		
-  		    });
-			
-			calcRoute();
-			
-  		    
-								
-		}
-		
-		function calcRoute() {
-		  		  
-		  var start = startLat + ',' + startLng;
-		  var end = startLat + ',' + startLng;
-		  var waypts = [];
-		  markers = [];
-		  		  		  
-		  for (var i = 0; i < businesses.length; i++) {
-		    waypts.push({
-				location: businesses[i].address,
-				stopover:true});
-			
-					
-			markers.push({
-				lat: businesses[i].lat,
-				lng: businesses[i].lng,
-				title: businesses[i].name 
-				
-			});
-				 
-								
-		  }
-		   
-		  var request = {
-		        origin: start,
-		        destination: end,
-		        waypoints: waypts,
-		        optimizeWaypoints: true,
-		        travelMode: google.maps.TravelMode.DRIVING
-		  };
-		  
-		  directionsService.route(request, function(response, status) {
-		      if (status == google.maps.DirectionsStatus.OK) {
-		        directionsDisplay.setDirections(response);
-				
-				var route = response.routes[0];
-				var order = route.waypoint_order;
-				
-				for (var i = 0; i < order.length; i++) {
-					var index = order[i];
-					//console.log(index);
-  				  	marker_lat = markers[index].lat;
-  				  	marker_lng = markers[index].lng;
-				  
-  					var letter = String.fromCharCode("B".charCodeAt(0) + i);
-					var loc = new google.maps.LatLng(marker_lat, marker_lng);
-  	  				var marker = new google.maps.Marker({
-  	  					position: loc, 
-  	  					map: map, 
-  						title: markers[index].title,
-						icon:"http://www.googlemapsmarkers.com/v1/"+letter+"/009900/"
-					
-					});	
-							
-		      	}
-			}
-		  });
-		   
-		}
-									
-		google.maps.event.addDomListener(window, 'load', initialize);
-		
-	</script>
+	<link href='/styles/style.css' rel='stylesheet' type='text/css'>
+    <link href='style.css' rel='stylesheet' type='text/css'>
 </head>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+<script>
+	var directionsDisplay;
+	var directionsService = new google.maps.DirectionsService();
+	var map;
+	var startLat;
+	var startLng;
+	var businesses;
+	var markers;
+			
+	function initialize() {
+  		
+		directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers: true});
+  	  	startLat = <%-lat%>;
+		startLng = <%-lng%>;
+		
+		businesses = <%-taskList%>;
+		var startLoc = new google.maps.LatLng(startLat, startLng);
+  	  	var mapOptions = {
+    		zoom: 10,
+    		center: startLoc
+  	  	}
+  	 	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+  	  	directionsDisplay.setMap(map);
+		directionsDisplay.setPanel(document.getElementById("directions_panel"));
+		
+		
+	    var marker = new google.maps.Marker({
+	    	position: startLoc, 
+	    	map: map, 
+	    	title:"Starting Location",
+			icon:"http://www.googlemapsmarkers.com/v1/A/FF0000/"
+	
+	    });
+		
+		calcRoute();
+		
+	    
+							
+	}
+	
+	function calcRoute() {
+	  		  
+	  var start = startLat + ',' + startLng;
+	  var end = startLat + ',' + startLng;
+	  var waypts = [];
+	  markers = [];
+	  		  		  
+	  for (var i = 0; i < businesses.length; i++) {
+	    waypts.push({
+			location: businesses[i].address,
+			stopover:true});
+		
+				
+		markers.push({
+			lat: businesses[i].lat,
+			lng: businesses[i].lng,
+			title: businesses[i].name 
+			
+		});
+			 
+							
+	  }
+	   
+	  var request = {
+	        origin: start,
+	        destination: end,
+	        waypoints: waypts,
+	        optimizeWaypoints: true,
+	        travelMode: google.maps.TravelMode.DRIVING
+	  };
+	  
+	  directionsService.route(request, function(response, status) {
+	      if (status == google.maps.DirectionsStatus.OK) {
+	        directionsDisplay.setDirections(response);
+			
+			var route = response.routes[0];
+			var order = route.waypoint_order;
+			
+			for (var i = 0; i < order.length; i++) {
+				var index = order[i];
+				//console.log(index);
+			  	marker_lat = markers[index].lat;
+			  	marker_lng = markers[index].lng;
+			  
+				var letter = String.fromCharCode("B".charCodeAt(0) + i);
+				var loc = new google.maps.LatLng(marker_lat, marker_lng);
+  				var marker = new google.maps.Marker({
+  					position: loc, 
+  					map: map, 
+					title: markers[index].title,
+					icon:"http://www.googlemapsmarkers.com/v1/"+letter+"/009900/"
+				
+				});	
+						
+	      	}
+		}
+	  });
+	   
+	}
+								
+	google.maps.event.addDomListener(window, 'load', initialize);
+	
+</script>
 <body>
 	<div class="head">
 		<span class="logo"></span><h2>Taskfly</h2>

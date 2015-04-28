@@ -6,8 +6,8 @@
     <link href='style.css' rel='stylesheet' type='text/css'> 
 </head>
 <body>
+    <button id='logout'>Log Out</button>
     <div id='main-wrapper'>
-        <button id='logoutBtn' style="float:right">Log Out</button>
         <h1>Where are you?</h1>
         <form id='addressForm'>
             <input type="text" id="address" placeholder='Enter your current address'>
@@ -105,7 +105,7 @@
         autocomplete = new google.maps.places.Autocomplete(input, options);
         
         
-		$('#logoutBtn').click(function() {
+		$('#logout').click(function() {
 			console.log('logout button clicked');
 			$.post("/logout", function(res) {
 		 		window.location.replace("/login");

@@ -111,7 +111,7 @@
 	</script>
 </head>
 <body>
-
+	<button id="back" style="margin-top:5; margin-left:5">&#8592; Back to List</button>
 	<button id='logout'>Log Out</button>
 	<div>
 	    <div id="results-wrapper">
@@ -149,5 +149,9 @@
 		$.post("/logout", function(res) {
 	 		window.location.replace("/login");
 	 	});
+	});
+	
+	$('#back').click(function() {
+	 	window.location.replace("/enterList");
 	});
 </script>

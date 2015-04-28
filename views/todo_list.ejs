@@ -16,15 +16,15 @@
     <div id='main-wrapper'>
         <h1>Where are you?</h1>
         <form id='addressForm'>
+            <div id="placeError" class="error">* You must enter a valid location</div>
             <input type="text" id="address" placeholder='Enter your current address'>
-            <span id="placeError" class="error">* You must enter a valid location</span>
         </form>
         <h1>What do you have to get done?</h1>
         <form id='taskForm'>
-            <input type="text" class="task">
             <span id="taskError" class="error">* Please enter at least one task</span></br>
-            <input type="text" class="task"></br>
-            <input type="text" class="task"></br>
+            <input type="text" class="task">
+            <input type="text" class="task">
+            <input type="text" class="task">
         </form>
         <button id="addTask"> + Add another task</button>
         <form id='minimalForm'>

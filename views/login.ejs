@@ -1,16 +1,21 @@
+<head>
+  <!--<link href='/styles/style.css' rel='stylesheet' type='text/css'>-->
+  <link href='style.css' rel='stylesheet' type='text/css'>
+</head>
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script>
 
   $(document).ready(function() {
   	$("#login").click(function() {
-  		$("#error").hide();
+  		$(".error").hide();
   		$.post("/validate", 
   		{ username: $("#username").val(), password: $("#password").val() }, 
   		function(data, status) {
   			if (data == "validated") {
   				window.location.replace("/enterList");	
   			} else {
-  				$("#error").show();
+  				$(".error").show();
   			}
   		});
   	});
@@ -18,18 +23,17 @@
   
 </script>
 
-<div class="alert alert-danger" role="alert" hidden=true id='error'>The username and/or password combination was not valid.</div>
-
-  <div id="content" style="width: 1000px; height:600px">
-    <div class="input-group">
-    <p>Username: <input type="text" class="form-control" id="username"</p>
-    <p>Password: <input type="password" class="form-control" id="password"</p>
+<div id='main-wrapper'>
+  <h1>Log in</h1>
+  <div class="input-group">
+    <p>Username: <input type="text" id="username"></p>
+    <p>Password: <input type="password" id="password"></p>
     <br>
   </div>
-  	<button id="login" class="btn btn-default">Log In</button>
-    <br>
-  	<br><a href="/signup" id="signup">Create An Account</a>
-  	
+  <div class="alert alert-danger error" role="alert">The username and/or password combination was not valid.</div>
+	<button id="login">Log In</button>
+  <br>
+	<br><a href="/signup" id="signup">Create An Account</a>
+    	
 </div>
-
 

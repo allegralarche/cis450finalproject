@@ -1,8 +1,11 @@
 {
-  "name": "MDGMap",
-  "version": "0.1.0",
+  "name": "TaskFly",
+  "version": "0.10.33",
   "description": "450 Final Project",
   "main": "app.js",
+  "engines": {
+    "npm": "1.4.28"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1"
   },
@@ -12,7 +15,6 @@
     "eclipse",
     "nodeclipse"
   ],
-  "private": true,
   "dependencies": {
     "body-parser": "*",
     "cookie-parser": "*",
@@ -20,10 +22,11 @@
     "ejs-locals": "*",
     "express": "4.x",
     "express-session": "*",
+    "foobar": "^1.1.0",
+    "lru-cache": "2.5.x",
     "node-sha1": "0.0.1",
-    "lru-cache": "2.5.x"
+    "oracledb": "^0.4.2"
   },
   "author": "",
-  "license": "MIT",
   "readmeFilename": "README.md"
 }

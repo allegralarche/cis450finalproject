@@ -128,7 +128,7 @@
     <div id="main-wrapper">
         <h1>Here's the plan!</h1>
         <% JSON.parse(taskList).forEach(function(bus) { %>
-            <h3>Go to <span class="bus"><%=bus.name%></span> to complete:</h3>
+            <h3>Go to <span class="bus"><%=bus.name%></span> at <span class='bus'><%=bus.address%></span> to complete:</h3>
             <% bus.tasks.forEach(function(task) { %>
                 <p>- <%=task%></p>
             <% }); %>

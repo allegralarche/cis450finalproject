@@ -1,7 +1,12 @@
+body {
+    background: url("notepad2.jpg") no-repeat center;
+    background-size: 100% auto;
+
+}
 #main-wrapper {
     width: 40%;
     min-height: 400px;
-    background-color: #E6E6E6;
+    background-color: rgba(255, 255, 204, .7);
     margin: 100px auto 100px auto;
     padding: 10px 15px 10px 15px;
     font-family: 'Open Sans', sans-serif;
@@ -28,14 +33,22 @@ button {
     border-radius: 4px;
     border: none;
 }
-.task, #address {
+a {
+    text-decoration: none;
+    color: #990000;
+}
+label {
+    width: 140px;
+    display: inline-block;
+}
+input[type=text], input[type=password]{
     width: 60%;
     height: 40px;
     margin: 10px;
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
 }
-#addTask:hover, button:hover{
+#addTask:hover, button:hover, a:hover{
     cursor: pointer;
     opacity: .7;
 }

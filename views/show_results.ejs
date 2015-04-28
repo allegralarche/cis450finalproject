@@ -124,8 +124,8 @@
 	</script>
 </head>
 <body>
-	<button id='logout'>Log Out</button>
     <div id="main-wrapper">
+    	<button id='logout'>Log Out</button>
         <h1>Here's the plan!</h1>
         <% JSON.parse(taskList).forEach(function(bus) { %>
             <h3>Go to <span class="bus"><%=bus.name%></span> to complete:</h3>

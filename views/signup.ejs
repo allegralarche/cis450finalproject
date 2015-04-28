@@ -1,4 +1,7 @@
-
+<head>
+  <!--<link href='/styles/style.css' rel='stylesheet' type='text/css'>-->
+  <link href='style.css' rel='stylesheet' type='text/css'> 
+</head>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
 <script>
@@ -10,37 +13,44 @@
   	
   	//on click
   	$("#submit").click(function() {
-		$.post("/createAccount", 
-		{ firstname: $("#firstname").val(),
-		lastname: $("#lastname").val(),
-		username: $("#username").val(),
-		password: $("#password").val() },
-		function(data, status) {
-			if (data == "Error: Missing field") {
-                $('#error').text('Necessary fields were left blank.');
-				$("#error").show();
-			} else if (data == "Error: Email exists") {
-				$('#error').text('The email you requested is already in use.');
-                $("#error").show();
-			} else {
-				window.location.replace("/enterList");
-			}
-  		});
-  	 });
- });
+      if ($("#password").val() !== $("#confirm").val()) {
+        $(".error").text('Passwords do not match.');
+        $(".error").show();
+      } else {
+    		$.post("/createAccount", 
+    		{ firstname: $("#firstname").val(),
+    		lastname: $("#lastname").val(),
+    		username: $("#username").val(),
+    		password: $("#password").val() },
+    		function(data, status) {
+    			if (data == "Error: Missing field") {
+            $('.error').text('Necessary fields were left blank.');
+    				$(".error").show();
+    			} else if (data == "Error: Email exists") {
+    				$('.error').text('The email you requested is already in use.');
+            $(".error").show();
+    			} else {
+    				window.location.replace("/enterList");
+    			}
+      	});
+      }
+    });
+  });
 </script>
 
-<div class="alert alert-danger" role="alert" hidden=true id='error'></div>
+<div id="main-wrapper">
 
-    <div id="content" style="width: 1000px; height:600px">
-        <div class="input-group">
-            <p>First Name: <input type="text" class="form-control" id="firstname"></p>
-            <p>Last Name: <input type="text" class="form-control" id="lastname"></p>
-            <p>Username: <input type="text" class="form-control" id="username"></p>
-            <p>Password: <input type="password" class="form-control" id="password"></p>
-        </div>
-
-  	<br><br><button class="btn btn-default" id="submit">Sign Up!</button>
-  
-
+  <h1>Sign up</h1>
+  <div class="input-group">
+      <label>First Name: </label><input type="text" id="firstname"></br>
+      <label>Last Name: </label><input type="text" id="lastname"></br>
+      <label>Username: </label><input type="text" id="username"></br>
+      <label>Password: </label><input type="password" id="password"></br>
+      <label>Confirm Password: </label><input type='password' id="confirm"></br>
   </div>
+
+  <div class="alert alert-danger error" role="alert"></div>
+
+  <br><br><button id="submit">Sign Up!</button>
+    
+</div>

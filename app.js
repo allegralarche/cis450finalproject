@@ -31,7 +31,7 @@ modelFile.init(function() {
 		app.post('/logout', routeFile.logout);
 		app.get('/enterList', routeFile.enterList);
 		app.post('/processList', routeFile.processList);
-	    app.get('/displayResults/:idsToItems/:idsToBusinesses/:unsatisfied', routeFile.displayResults);
+	    app.get('/displayResults/:idsToItems/:idsToBusinesses/:unsatisfied/:lat/:lng', routeFile.displayResults);
 		
 		http.createServer(app).listen(app.get('port'), function() {
 				 console.log( 'Open browser to http://localhost:' + app.get( 'port' ));

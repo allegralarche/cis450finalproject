@@ -79,9 +79,6 @@ exports.processList = function(req, res) {
 
 //Called as a GET request to show the user his/her results
 exports.displayResults = function(req, res) {
-
-
-
 	var recommendations = JSON.parse(req.params.idsToItems);
 	var idsToBusinesses = JSON.parse(req.params.idsToBusinesses);
 	var unsatisfiedToDos = JSON.parse(req.params.unsatisfied);
@@ -108,9 +105,6 @@ exports.displayResults = function(req, res) {
 		
 	var taskListString = JSON.stringify(taskList);
 	var unsatisfiedToDosString = JSON.stringify(unsatisfiedToDos);
-	
-	console.log('taskList: ' + taskListString);
-	console.log('unsatisfiedToDos: ' + unsatisfiedToDosString);
 	
 	//Put info into format that can be easily displayed in show_results
 	res.render('show_results', {

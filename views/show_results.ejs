@@ -1,7 +1,9 @@
+
 <head>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300' rel='stylesheet' type='text/css'>
     <link href='/styles/style.css' rel='stylesheet' type='text/css'>
     <!--<link href='style.css' rel='stylesheet' type='text/css'>-->
+    
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
 	<script>
@@ -126,29 +128,35 @@
 	</script>
 </head>
 <body>
+
 	<button id='logout'>Log Out</button>
-    <div id="main-wrapper">
-        <h1>Here's the plan!</h1>
-        <% JSON.parse(taskList).forEach(function(bus) { %>
-            <h3>Go to <span class="bus"><%=bus.name%></span> at <span class='bus'><%=bus.address%></span> to complete:</h3>
-            <% bus.tasks.forEach(function(task) { %>
-                <p>- <%=task%></p>
-            <% }); %>
-        <%  }); %>
-        <% if(JSON.parse(unsatisfiedToDos).length > 0) { %>
-            <h1>We couldn't help you with...</h1>
-            <% JSON.parse(unsatisfiedToDos).forEach(function(t) { %>
-                <p>- <%=t%></p>
-            <% }); %>
-        <% } %>
-         
-        
+	<div>
+	    <div id="results-wrapper">
+	        <h1>Here's where you should go!</h1>
+	        <h3>The list of businesses that will allow you to complete all of your tasks:</h3>
+	        <ul>
+	        <% JSON.parse(taskList).forEach(function(bus) { %>
+	            <li><h3>Go to <span class="bus"><%=bus.name%></span> at <span class='bus'><%=bus.address%></span> to complete:</h3></li>
+	            <ul><% bus.tasks.forEach(function(task) { %>
+	                <li><%=task%></li>
+	            <% }); %></ul>
+	        <%  }); %>
+	        </ul>
+	        <% if(JSON.parse(unsatisfiedToDos).length > 0) { %>
+	            <h1>We couldn't help you with...</h1>
+	            <% JSON.parse(unsatisfiedToDos).forEach(function(t) { %>
+	                <p>- <%=t%></p>
+	            <% }); %>
+	        <% } %>
+	        <h1>Here's a map of your route!</h1></br>
+	        <div id="map-canvas" style="width:100%;height:100%;"></div>	
+	   	</div>
+	    <div id="directions-wrapper">
+	   		<h1>Here's how you should get there!</h1>
+	   		<h3>The best order for completing all of your tasks, and directions to route you:</h3>
+       		<div id="directions_panel"></div>
+        </div>
     </div>
-	
-	<div id="map-canvas" style="width:70%;height:70%;"></div>
-	<div id="directions_panel">
-	    
-	</div>
 	
 	
 </body>

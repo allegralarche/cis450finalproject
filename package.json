@@ -1,5 +1,5 @@
 {
-  "name": "MDGMap",
+  "name": "TaskFly",
   "version": "0.10.33",
   "description": "450 Final Project",
   "main": "app.js",
@@ -15,7 +15,6 @@
     "eclipse",
     "nodeclipse"
   ],
-  "private": true,
   "dependencies": {
     "body-parser": "*",
     "cookie-parser": "*",
@@ -29,6 +28,5 @@
     "oracledb": "^0.4.2"
   },
   "author": "",
-  "license": "MIT",
   "readmeFilename": "README.md"
 }

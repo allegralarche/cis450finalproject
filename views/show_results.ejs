@@ -15,9 +15,7 @@
 				
 		function initialize() {
 	  		
-			directionsDisplay = new google.maps.DirectionsRenderer({
-				    suppressMarkers : true
-			});
+			directionsDisplay = new google.maps.DirectionsRenderer();
 	  	  	startLat = <%-lat%>;
 			startLng = <%-lng%>;
 			
@@ -51,15 +49,17 @@
 		  		  		  
 		  for (var i = 0; i < businesses.length; i++) {
 		    waypts.push({
-				location:businesses[i].lat + ',' + businesses[i].lng,
-		        stopover:true});
-						
+				location: businesses[i].address,
+				stopover:true});
+			
+					
 			markers.push({
 				lat: businesses[i].lat,
 				lng: businesses[i].lng,
 				title: businesses[i].name 
 				
-			}); 
+			});
+				 
 								
 		  }
 		   
@@ -77,7 +77,8 @@
 				
 				var route = response.routes[0];
 		        // For each waypoint, add correesponding marker
-		        for (var i = 0; i < route.legs.length; i++) {
+		        /*
+				for (var i = 0; i < route.legs.length; i++) {
 		          
 				  var waypt_lat = route.legs[i].end_location.lat();
 				  var waypt_lng = route.legs[i].end_location.lng();
@@ -104,6 +105,7 @@
 					
 		          }
 		         }
+				*/
 				
 		      }
 		  }); 

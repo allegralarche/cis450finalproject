@@ -9,9 +9,15 @@ To open the app, please visit http://52.4.203.165:8080. Upon opening the app, ei
 This app uses an oracle database linked with the node-oracle module.   
 
 
-### Tools
+## Tools
 
 Created with [Nodeclipse](https://github.com/Nodeclipse/nodeclipse-1)
  ([Eclipse Marketplace](http://marketplace.eclipse.org/content/nodeclipse), [site](http://www.nodeclipse.org))   
 
 Nodeclipse is free open-source project that grows with your contributions.
+
+## Modules / Architecture
+-Model: models.js contains all code for connecting to, querying, and updating the database. db_populator/ contains all ofthe files and original Yelp data used to populate our database.
+-View: views/ contains all of the ejs files that represent the views for the different pages of the site.
+-Controller: routes.js contains all of the routes for processing and passing data between the model and views.
+

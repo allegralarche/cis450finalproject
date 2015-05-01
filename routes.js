@@ -314,29 +314,31 @@ var shortestDistanceMetric = function(obj, startLatitude, startLongitude, callba
 		var d_min = 25.0 //harcoded?? 
 		if (business_list.length == 0) { 
 			unsatisfiedToDos.push(item);
-			break; 
-		}
-		for (var  i = 0; i < business_list.length; i++) {
-			var lat = business_list[i].lat;
-			var lon = business_list[i].long;
-			d = getDistanceFromLatLonInKm(startLatitude,startLongitude,lat,lon);
-			if (d < d_min) {
-				d_min = d;
-				closest_bid = business_list[i].bid
-				closest_index = i;
+			
+		} else {
+			for (var  i = 0; i < business_list.length; i++) {
+				var lat = business_list[i].lat;
+				var lon = business_list[i].long;
+				d = getDistanceFromLatLonInKm(startLatitude,startLongitude,lat,lon);
+				if (d < d_min) {
+					d_min = d;
+					closest_bid = business_list[i].bid
+					closest_index = i;
+				}
+			}
+			
+			
+			if (!(closest_bid in suggestions)) {
+				suggestions[closest_bid] = [];
+			}
+			suggestions[closest_bid].push(item);
+			idsToBusinesses[closest_bid] = business_list[closest_index];
+			
+			if (!(closest_bid in suggestedBusinesses)) {
+				suggestedBusinesses.push(closest_bid);
 			}
 		}
 		
-		
-		if (!(closest_bid in suggestions)) {
-			suggestions[closest_bid] = [];
-		}
-		suggestions[closest_bid].push(item);
-		idsToBusinesses[closest_bid] = business_list[closest_index];
-		
-		if (!(closest_bid in suggestedBusinesses)) {
-			suggestedBusinesses.push(closest_bid);
-		}
 		
 		
 								
